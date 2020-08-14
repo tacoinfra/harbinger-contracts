@@ -51,10 +51,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : timestamp : @parameter%update : @storage
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : timestamp : @parameter%update : @storage
+            # of_some: Get-item:77 # @some : timestamp : @parameter%update : @storage
           }
           {
-            PUSH int 75; # int : timestamp : @parameter%update : @storage
+            PUSH int 77; # int : timestamp : @parameter%update : @storage
             FAILWITH;   # FAILED
           }; # @some : timestamp : @parameter%update : @storage
         CAR;        # timestamp : timestamp : @parameter%update : @storage
@@ -63,7 +63,7 @@ code
         IF
           {}
           {
-            PUSH string "WrongCondition: sp.fst(params[self.data.assetCode]) > self.data.lastUpdateTime"; # string : @parameter%update : @storage
+            PUSH int 81; # int : @parameter%update : @storage
             FAILWITH;   # FAILED
           }; # @parameter%update : @storage
         SWAP;       # @storage : @parameter%update
@@ -86,10 +86,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
+            # of_some: Get-item:77 # @some : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
           }
           {
-            PUSH int 75; # int : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
+            PUSH int 77; # int : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
             FAILWITH;   # FAILED
           }; # @some : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
         CAR;        # timestamp : nat : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))) : @parameter%update
@@ -162,10 +162,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDDDR;   # nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -180,10 +180,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDDAR;   # nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -197,10 +197,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDAR;    # nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map %saved int nat) (nat %sum))) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -212,10 +212,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            # of_some: Get-item:77 # @some : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
           }
           {
-            PUSH int 75; # int : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            PUSH int 77; # int : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
             FAILWITH;   # FAILED
           }; # @some : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         CDDDAR;     # nat : nat : nat : nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
@@ -227,7 +227,7 @@ code
             CAR;        # nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
           }
           {
-            PUSH int 97; # int : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            PUSH int 99; # int : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
             FAILWITH;   # FAILED
           }; # nat : nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         MUL;        # nat : nat : map int nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
@@ -278,10 +278,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDDDR;   # nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -296,10 +296,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDDAR;   # nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -313,10 +313,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            # of_some: Get-item:77 # @some : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
           }
           {
-            PUSH int 75; # int : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
+            PUSH int 77; # int : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
             FAILWITH;   # FAILED
           }; # @some : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
         CDDDDAR;    # nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))
@@ -328,10 +328,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            # of_some: Get-item:77 # @some : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
           }
           {
-            PUSH int 75; # int : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            PUSH int 77; # int : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
             FAILWITH;   # FAILED
           }; # @some : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         CDDDAR;     # nat : nat : nat : nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
@@ -343,7 +343,7 @@ code
             CAR;        # nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
           }
           {
-            PUSH int 97; # int : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            PUSH int 99; # int : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
             FAILWITH;   # FAILED
           }; # nat : nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         MUL;        # nat : int : map int nat : nat : pair int int : pair (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
@@ -421,10 +421,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            # of_some: Get-item:77 # @some : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
           }
           {
-            PUSH int 75; # int : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
+            PUSH int 77; # int : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
             FAILWITH;   # FAILED
           }; # @some : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
         CDDDDDDR;   # nat : nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : @parameter%update
@@ -472,10 +472,10 @@ code
         GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
         IF_SOME
           {
-            # of_some: Get-item:75 # @some : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
+            # of_some: Get-item:77 # @some : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
           }
           {
-            PUSH int 75; # int : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
+            PUSH int 77; # int : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
             FAILWITH;   # FAILED
           }; # @some : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
         CDDDDDDR;   # nat : int : map int nat : nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
@@ -520,7 +520,7 @@ code
             IF
               {}
               {
-                PUSH string "WrongCondition: self.data.prices.first < self.data.prices.last"; # string : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
+                PUSH int 107; # int : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
                 FAILWITH;   # FAILED
               }; # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
             # self.data.prices.sum = sp.as_nat(self.data.prices.sum - self.data.prices.saved[self.data.prices.first]) # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
@@ -551,10 +551,10 @@ code
             GET;        # option nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
             IF_SOME
               {
-                # of_some: Get-item:105 # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
+                # of_some: Get-item:107 # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
               }
               {
-                PUSH int 105; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
+                PUSH int 107; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
                 FAILWITH;   # FAILED
               }; # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat))))
             DIG 6;      # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) nat)) (pair (pair int int) (pair (map int nat) nat)))) : @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
@@ -564,7 +564,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 105; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
+                PUSH int 107; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
                 FAILWITH;   # FAILED
               }; # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
             SWAP;       # map int nat : @some : pair int int : pair (pair int int) (pair (map int nat) nat) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
@@ -652,7 +652,7 @@ code
             IF
               {}
               {
-                PUSH string "WrongCondition: self.data.volumes.first < self.data.volumes.last"; # string : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
+                PUSH int 108; # int : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
                 FAILWITH;   # FAILED
               }; # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
             # self.data.volumes.sum = sp.as_nat(self.data.volumes.sum - self.data.volumes.saved[self.data.volumes.first]) # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
@@ -683,10 +683,10 @@ code
             GET;        # option nat : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
             IF_SOME
               {
-                # of_some: Get-item:106 # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
+                # of_some: Get-item:108 # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
               }
               {
-                PUSH int 106; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
+                PUSH int 108; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
                 FAILWITH;   # FAILED
               }; # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp) : pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat))))
             DIG 6;      # pair (pair string (pair nat timestamp)) (pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) nat)))) : @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
@@ -696,7 +696,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 106; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
+                PUSH int 108; # int : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
                 FAILWITH;   # FAILED
               }; # @some : map int nat : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
             SWAP;       # map int nat : @some : pair int int : pair (pair int int) (pair (map int nat) @some) : pair (int %numDataPoints) (address %oracleContract) : pair string (pair nat timestamp)
@@ -798,7 +798,7 @@ code
             CAR;        # nat : timestamp : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) @some)))
           }
           {
-            PUSH int 109; # int : timestamp : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) @some)))
+            PUSH int 111; # int : timestamp : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) @some)))
             FAILWITH;   # FAILED
           }; # nat : timestamp : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) @some)))
         PAIR;       # pair nat timestamp : string : pair (pair (int %numDataPoints) (address %oracleContract)) (pair (pair (pair int int) (pair (map int nat) @some)) (pair (pair int int) (pair (map int nat) @some)))
