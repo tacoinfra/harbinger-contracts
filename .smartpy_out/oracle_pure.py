@@ -70,7 +70,7 @@ class OracleContract(sp.Contract):
     def update(self, params):
         # Iterate over assets in the input map.
         keyValueList = params.items()
-        sp.for assetData in keyValueList:
+        with sp.for_('assetData', keyValueList) as assetData:
             # Extract asset names, signatures, and the new data.
             assetName = assetData.key
             signature = sp.compute(sp.fst(assetData.value))
@@ -850,3 +850,4 @@ initialOracleData = (
         )
     )
 )
+

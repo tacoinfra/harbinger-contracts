@@ -101,7 +101,7 @@ class NormalizerContract(sp.Contract):
         fifoDT.push(self.data.volumes, volume)
 
         # Trim the queue if it exceeds the number of data points.
-        sp.if fifoDT.len(self.data.prices) > self.data.numDataPoints:
+        with sp.if_(fifoDT.len(self.data.prices) > self.data.numDataPoints):
             fifoDT.pop(self.data.prices)
             fifoDT.pop(self.data.volumes)
 
@@ -487,3 +487,4 @@ def makeMap(assetCode, start, end, open, high, low, close, volume):
         tkey=sp.TString,
         tvalue=TezosOracle.OracleDataType
     )
+

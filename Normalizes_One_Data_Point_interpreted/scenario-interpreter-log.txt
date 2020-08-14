@@ -1,0 +1,19 @@
+Comment...
+ h1: Normalizes One Data Point
+Comment...
+ h2: GIVEN a Normalizer contract.
+Creating contract
+ -> (Pair (Pair "XTZ-USD" (Pair 0 "0")) (Pair (Pair 3 "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr") (Pair (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)) (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)))))
+ => ./Normalizes_One_Data_Point_interpreted/testContractTypes.0.2.tz 2
+ => ./Normalizes_One_Data_Point_interpreted/testContractCode.0.2.tz 684
+ => ./Normalizes_One_Data_Point_interpreted/testContractCode.0.2.tz.json 787
+ => ./Normalizes_One_Data_Point_interpreted/testPrettyPrint.0.2.py 43
+Comment...
+ h2: WHEN an update is provided
+Executing update(sp.set_type_expr({'XTZ-USD' : (sp.timestamp(1595104530), (sp.timestamp(1595104531), (3059701, (1, (2, (3, 4))))))}, sp.TBigMap(sp.TString, sp.TPair(sp.TTimestamp, sp.TPair(sp.TTimestamp, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TNat)))))))))...
+ -> (Pair (Pair "XTZ-USD" (Pair 2 "1595104530")) (Pair (Pair 3 "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr") (Pair (Pair (Pair 0 0) (Pair {Elt 0 8} 8)) (Pair (Pair 0 0) (Pair {Elt 0 4} 4)))))
+Comment...
+ h2: THEN the ComputedPrice is the VWAP.
+Verifying sp.contract_data(0).computedPrice == 2...
+ => ./Normalizes_One_Data_Point_interpreted/testVerify.6.tz 23
+ OK

@@ -1,0 +1,16 @@
+Comment...
+ h1: Fails when data is pushed from bad address
+Comment...
+ h2: GIVEN a Normalizer contract whitelisted to an address
+Creating contract
+ -> (Pair (Pair "XTZ-USD" (Pair 0 "0")) (Pair (Pair 3 "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr") (Pair (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)) (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)))))
+ => ./Fails_with_bad_contract_data_interpreted/testContractTypes.0.2.tz 2
+ => ./Fails_with_bad_contract_data_interpreted/testContractCode.0.2.tz 684
+ => ./Fails_with_bad_contract_data_interpreted/testContractCode.0.2.tz.json 787
+ => ./Fails_with_bad_contract_data_interpreted/testPrettyPrint.0.2.py 43
+Comment...
+ h2: WHEN an update is pushed from the wrong address
+Comment...
+ h2: THEN the update fails.
+Executing update(sp.set_type_expr({'XTZ-USD' : (sp.timestamp(1595104501), (sp.timestamp(1595104531), (3059701, (1, (2, (3, 4))))))}, sp.TBigMap(sp.TString, sp.TPair(sp.TTimestamp, sp.TPair(sp.TTimestamp, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TPair(sp.TNat, sp.TNat)))))))))...
+ -> --- Expected failure in transaction --- WrongCondition in line 71: sp.sender == self.data.oracleContract ['bad sender']
