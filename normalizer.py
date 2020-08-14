@@ -70,7 +70,7 @@ class NormalizerContract(sp.Contract):
         # Verify the sender is the whitelisted oracle contract.
         sp.verify(
             sp.sender == self.data.oracleContract,
-            message="Can only be called by the oracle contract."
+            message="bad sender"
         )
 
         # Retrieve the asset data from the map.
