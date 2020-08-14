@@ -52,7 +52,8 @@ class OracleContract(sp.Contract):
             tvalue=TezosOracle.OracleDataType
         )
     ):
-        self.exception_optimization_level = "DefaultLine"
+        self.exception_optimization_level = "Unit"
+        self.add_flag("no_comment")
 
         self.init(
             publicKey=publicKey,

@@ -36,7 +36,8 @@ class NormalizerContract(sp.Contract):
             "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"),
         numDataPoints=sp.int(3)
     ):
-        self.exception_optimization_level = "DefaultLine"
+        self.exception_optimization_level = "Unit"
+        self.add_flag("no_comment")
 
         # Populate the queues with an initial zero elements
         pricesQueue = fifoDT()
