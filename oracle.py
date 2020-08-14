@@ -73,8 +73,8 @@ class OracleContract(sp.Contract):
         sp.for assetData in keyValueList:
             # Extract asset names, signatures, and the new data.
             assetName = assetData.key
-            signature = sp.fst(assetData.value)
-            newData = sp.snd(assetData.value)
+            signature = sp.compute(sp.fst(assetData.value))
+            newData = sp.compute(sp.snd(assetData.value))
 
             # Verify Oracle is tracking this asset.
             sp.verify(
@@ -91,9 +91,9 @@ class OracleContract(sp.Contract):
             )
 
             # Verify start timestamp is newer than the last update.
-            oldData = self.data.oracleData[assetName]
-            oldStartTime = sp.fst(oldData)
-            newStartTime = sp.fst(newData)
+            oldData = sp.compute(self.data.oracleData[assetName])
+            oldStartTime = sp.compute(sp.fst(oldData))
+            newStartTime = sp.compute(sp.fst(newData))
             sp.verify(newStartTime > oldStartTime, "bad time")
 
             # Replace the data.
