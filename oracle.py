@@ -52,6 +52,8 @@ class OracleContract(sp.Contract):
             tvalue=TezosOracle.OracleDataType
         )
     ):
+        self.exception_optimization_level = "DefaultLine"
+
         self.init(
             publicKey=publicKey,
             oracleData=initialData
