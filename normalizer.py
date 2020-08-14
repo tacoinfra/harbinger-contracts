@@ -72,7 +72,7 @@ class NormalizerContract(sp.Contract):
         )
 
         # Retrieve the asset data from the map.
-        assetData = updateMap[self.data.assetCode]
+        assetData = sp.compute(updateMap[self.data.assetCode])
 
         # Require updates be monotonically increasing in start times.
         updateStartTime = sp.fst(assetData)

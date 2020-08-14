@@ -35,7 +35,7 @@ code
             IF_SOME
               {}
               {
-                PUSH int 115; # int : @parameter%revoke : bytes : @storage
+                PUSH int 118; # int : @parameter%revoke : bytes : @storage
                 FAILWITH;   # FAILED
               }; # @some : @parameter%revoke : bytes : @storage
             CHECK_SIGNATURE; # bool : @storage
@@ -93,7 +93,7 @@ code
                 IF_SOME
                   {}
                   {
-                    PUSH int 115; # int : signature : bytes : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
+                    PUSH int 118; # int : signature : bytes : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                     FAILWITH;   # FAILED
                   }; # @some : signature : bytes : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                 CHECK_SIGNATURE; # bool : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
@@ -115,10 +115,10 @@ code
                 GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                 IF_SOME
                   {
-                    # of_some: Get-item:91 # @some : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
+                    # of_some: Get-item:94 # @some : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                   }
                   {
-                    PUSH int 91; # int : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
+                    PUSH int 94; # int : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                     FAILWITH;   # FAILED
                   }; # @some : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
                 CAR;        # timestamp : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update : @storage
@@ -142,9 +142,8 @@ code
                 CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update
                 DIG 2;      # pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
                 DUP;        # pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
-                DUG 3;      # pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update
-                CAR;        # string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : @parameter%update
-                DIG 3;      # pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
+                CAR;        # string : pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
+                SWAP;       # pair string (pair signature (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) : string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
                 CDDR;       # pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))) : string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
                 SOME;       # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
                 SWAP;       # string : option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key : @parameter%update
