@@ -132,7 +132,6 @@ class OracleContract(sp.Contract):
 # Oracle Tests
 #####################################################################
 
-
 # Import Normalizer for E2E testing.
 Normalizer = sp.import_script_from_url("file:normalizer.py")
 
