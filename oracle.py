@@ -79,7 +79,7 @@ class OracleContract(sp.Contract):
             # Verify Oracle is tracking this asset.
             sp.verify(
                 self.data.oracleData.contains(assetName),
-                "Oracle does not track asset"
+                "bad asset"
             )
 
             # Verify signature.
@@ -87,14 +87,14 @@ class OracleContract(sp.Contract):
             sp.verify(
                 sp.check_signature(
                     self.data.publicKey.open_some(), signature, bytes),
-                "Bad signature"
+                "bad sig"
             )
 
             # Verify start timestamp is newer than the last update.
             oldData = self.data.oracleData[assetName]
             oldStartTime = sp.fst(oldData)
             newStartTime = sp.fst(newData)
-            sp.verify(newStartTime > oldStartTime, "Update in past")
+            sp.verify(newStartTime > oldStartTime, "bad time")
 
             # Replace the data.
             self.data.oracleData[assetName] = newData
