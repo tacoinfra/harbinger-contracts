@@ -75,28 +75,28 @@ class NormalizerContract(sp.Contract):
         )
 
         # Retrieve the asset data from the map.
-        assetData = updateMap[self.data.assetCode]
+        assetData = sp.compute(updateMap[self.data.assetCode])
 
         # Require updates be monotonically increasing in start times.
-        updateStartTime = sp.fst(assetData)
+        updateStartTime = sp.compute(sp.fst(assetData))
         sp.verify(updateStartTime > self.data.lastUpdateTime)
 
         # Update the last updated time.
         self.data.lastUpdateTime = updateStartTime
 
         # Extract required information
-        endPair = sp.snd(assetData)
-        openPair = sp.snd(endPair)
-        highPair = sp.snd(openPair)
-        lowPair = sp.snd(highPair)
-        closeAndVolumePair = sp.snd(lowPair)
+        endPair = sp.compute(sp.snd(assetData))
+        openPair = sp.compute(sp.snd(endPair))
+        highPair = sp.compute(sp.snd(openPair))
+        lowPair = sp.compute(sp.snd(highPair))
+        closeAndVolumePair = sp.compute(sp.snd(lowPair))
 
         # Calculate the the price for this data point.
         # average price * volume
-        high = sp.fst(highPair)
-        low = sp.fst(lowPair)
-        close = sp.fst(closeAndVolumePair)
-        volume = sp.snd(closeAndVolumePair)
+        high = sp.compute(sp.fst(highPair))
+        low = sp.compute(sp.fst(lowPair))
+        close = sp.compute(sp.fst(closeAndVolumePair))
+        volume = sp.compute(sp.snd(closeAndVolumePair))
         volumePrice = ((high + low + close) / 3) * volume
 
         # Push the latest items to the FIFO queue

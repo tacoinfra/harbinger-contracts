@@ -135,10 +135,6 @@ class OracleContract(sp.Contract):
 # Oracle Tests
 #####################################################################
 
-# Import Normalizer for E2E testing.
-Normalizer = sp.import_script_from_url("file:normalizer.py")
-
-
 @sp.add_test(name="Update Once With Valid Data")
 def test():
     scenario = sp.test_scenario()
@@ -759,6 +755,9 @@ def test():
     scenario += contract.update(parameter)
 
 # TODO(keefertaylor): Re-enable.
+#
+# Normalizer = sp.import_script_from_url("file:normalizer.py")
+#
 # @sp.add_test(name = "E2E Push Test")
 # def test():
 #     scenario = sp.test_scenario()
