@@ -664,8 +664,8 @@ def test():
     scenario.h2("THEN the oracle is revoked")
     scenario.verify(~contract.data.publicKey.is_some())
 
-    scenario.h2("AND the oracle's data is empty")
-    scenario.verify_equal(contract.data.oracleData.get(assetCode, None), None)
+    scenario.h2("AND the oracle's data no longer contains the original asset")
+    scenario.verify(~contract.data.oracleData.contains(assetCode))
 
     scenario.h2("AND future updates fail.")
     start = sp.timestamp(1)
