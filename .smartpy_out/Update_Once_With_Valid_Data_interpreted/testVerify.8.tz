@@ -1,0 +1,34 @@
+parameter (pair (big_map %oracleData string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) (option %publicKey key));
+storage   unit;
+code
+  {
+    DUP;        # pair @parameter @storage : pair @parameter @storage
+    CDR;        # @storage : pair @parameter @storage
+    SWAP;       # pair @parameter @storage : @storage
+    CAR;        # @parameter : @storage
+    # == verify ==
+    # sp.verify(sp.timestamp(2) == sp.fst(sp.snd(params.k0.oracleData['XTZ-USD']))) # @parameter : @storage
+    CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    PUSH string "XTZ-USD"; # string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    IF_SOME
+      {
+        # of_some: Get-item:184 # @some : @storage
+      }
+      {
+        PUSH int 184; # int : @storage
+        FAILWITH;   # FAILED
+      }; # @some : @storage
+    CDAR;       # timestamp : @storage
+    PUSH timestamp "2"; # timestamp : timestamp : @storage
+    COMPARE;    # int : @storage
+    EQ;         # bool : @storage
+    IF
+      {}
+      {
+        PUSH string "WrongCondition: sp.timestamp(2) == sp.fst(sp.snd(params.k0.oracleData['XTZ-USD']))"; # string : @storage
+        FAILWITH;   # FAILED
+      }; # @storage
+    NIL operation; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };
