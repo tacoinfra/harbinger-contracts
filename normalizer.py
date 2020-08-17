@@ -61,13 +61,9 @@ class NormalizerContract(sp.Contract):
         self.init(
                 assetMap=assetMap,
                 assetCode=assetCode,
-                #  computedPrice=0,
-                #  prices=pricesQueue,
-                #  volumes=volumesQueue,
-                #  lastUpdateTime=lastUpdateTime,
-                  oracleContract=oracleContractAddress,
-                  numDataPoints=numDataPoints
-                  )
+                oracleContract=oracleContractAddress,
+                numDataPoints=numDataPoints
+                )
 
     # Update the Normalizer contract with a new set of data points.
     #
@@ -89,9 +85,8 @@ class NormalizerContract(sp.Contract):
         )
 
         # Retrieve the asset data from the map.
+        assetCode = self.data.assetCode
         assetData = sp.compute(updateMap[self.data.assetCode])
-
-        assetCode = "XTZ-USD"
 
         # Require updates be monotonically increasing in start times.
         updateStartTime = sp.compute(sp.fst(assetData))
