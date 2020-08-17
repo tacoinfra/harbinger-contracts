@@ -30,12 +30,17 @@ class NormalizerContract(sp.Contract):
     #   oracleContractAddress(sp.TAddress): The address of the Oracle contract which provides data points.
     #   numDataPoints(sp.TInt): The number of data points to normalize. Larger values provide a better VWAP but result in larger contract storage.
     def __init__(
-        self,
-        assetCode="XTZ-USD",
-        oracleContractAddress=sp.address(
-            "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"),
-        numDataPoints=sp.int(3)
+        self
+        # self,
+        # assetCode="XTZ-USD",
+        # oracleContractAddress=sp.address(
+        #     "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"),
+        # numDataPoints=sp.int(3)
     ):
+        assetCode = "XTZ-USD"
+        oracleContractAddress=sp.address("KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"),
+        numDataPoints=sp.int(3)
+
         self.exception_optimization_level = "Unit"
         self.add_flag("no_comment")
 
@@ -138,9 +143,7 @@ def test():
     scenario.h1("Fails when data is pushed from bad address")
 
     scenario.h2("GIVEN a Normalizer contract whitelisted to an address")
-    contract=NormalizerContract(
-        oracleContractAddress=defaultOracleContractAddress
-    )
+    contract = NormalizerContract()
     scenario += contract
 
     scenario.h2("WHEN an update is pushed from the wrong address")
@@ -159,311 +162,311 @@ def test():
         )
     ).run(sender=badAddress, valid=False)
 
-@sp.add_test(name="Fails with updates from the same time")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the past")
+# @sp.add_test(name="Fails with updates from the same time")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Fails with updates from the past")
 
-    scenario.h2("GIVEN a Normalizer contract with an update at a given time = 1")
-    updateTime=sp.timestamp(1)
-    contract=NormalizerContract()
-    scenario += contract
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=updateTime,
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress)
+#     scenario.h2("GIVEN a Normalizer contract with an update at a given time = 1")
+#     updateTime=sp.timestamp(1)
+#     contract=NormalizerContract()
+#     scenario += contract
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=updateTime,
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=1,
+#             low=2,
+#             close=3,
+#             volume=4
+#         )
+#     ).run(sender=defaultOracleContractAddress)
 
-    scenario.h2("WHEN an update is provided at the same time.")
-    scenario.h2("THEN the update fails.")
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=updateTime,
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress, valid=False)
+#     scenario.h2("WHEN an update is provided at the same time.")
+#     scenario.h2("THEN the update fails.")
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=updateTime,
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=1,
+#             low=2,
+#             close=3,
+#             volume=4
+#         )
+#     ).run(sender=defaultOracleContractAddress, valid=False)
 
-@sp.add_test(name="Fails with updates from the past time")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the past")
+# @sp.add_test(name="Fails with updates from the past time")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Fails with updates from the past")
 
-    scenario.h2(
-        "GIVEN a Normalizer contract with an update at a current time and a time in the past")
-    currentTime=sp.timestamp(2)
-    pastTime=sp.timestamp(1)
-    contract=NormalizerContract()
-    scenario += contract
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=currentTime,
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress)
+#     scenario.h2(
+#         "GIVEN a Normalizer contract with an update at a current time and a time in the past")
+#     currentTime=sp.timestamp(2)
+#     pastTime=sp.timestamp(1)
+#     contract=NormalizerContract()
+#     scenario += contract
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=currentTime,
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=1,
+#             low=2,
+#             close=3,
+#             volume=4
+#         )
+#     ).run(sender=defaultOracleContractAddress)
 
-    scenario.h2("WHEN an update is provided from the past.")
-    scenario.h2("THEN the update fails.")
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=pastTime,
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress, valid=False)
-
-
-@sp.add_test(name="Fails with updates for the wrong asset")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the wrong asset")
-
-    scenario.h2("GIVEN a Normalizer contract for the bitcoin price")
-    contract=NormalizerContract(assetCode="BTC-USD")
-    scenario += contract
-
-    scenario.h2("WHEN an update is provided for XTZ-USD")
-    scenario.h2("THEN the update fails.")
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104530),
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress, valid=False)
-
-@sp.add_test(name="Normalizes One Data Point")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Normalizes One Data Point")
-
-    scenario.h2("GIVEN a Normalizer contract.")
-    contract=NormalizerContract()
-    scenario += contract
-
-    high=1
-    low=2
-    close=3
-    volume=4
-
-    scenario.h2("WHEN an update is provided")
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104530),
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=high,
-            low=low,
-            close=close,
-            volume=volume
-        )
-    ).run(sender=defaultOracleContractAddress)
-
-    scenario.h2("THEN the ComputedPrice is the VWAP.")
-    expected = TezosOracle.computeVWAP(
-        high=high,
-        low=low,
-        close=close,
-        volume=volume
-    ) // volume
-    scenario.verify(contract.data.computedPrice == expected)
-
-@sp.add_test(name="Normalizes Three Data Points")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Normalizes Three Data Points")
-
-    scenario.h2("GIVEN a Normalizer contract")
-    contract=NormalizerContract()
-    scenario += contract
-
-    scenario.h2("WHEN three updates are provided")
-    high1=1
-    low1=2
-    close1=3
-    volume1=4
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104530),
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=high1,
-            low=low1,
-            close=close1,
-            volume=volume1
-        )
-    ).run(sender=defaultOracleContractAddress)
-
-    high2=5
-    low2=6
-    close2=7
-    volume2=8
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104532),
-            end=sp.timestamp(1595104533),
-            open=3059701,
-            high=high2,
-            low=low2,
-            close=close2,
-            volume=volume2
-        )
-    ).run(sender=defaultOracleContractAddress)
-
-    high3=9
-    low3=10
-    close3=11
-    volume3=12
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104534),
-            end=sp.timestamp(1595104535),
-            open=3059701,
-            high=high3,
-            low=low3,
-            close=close3,
-            volume=volume3
-        )
-    ).run(sender=defaultOracleContractAddress)
-
-    scenario.h2("WHEN the ComputedPrice is the VWAP of the updates")
-    partialVWAP1 = TezosOracle.computeVWAP(
-        high=high1,
-        low=low1,
-        close=close1,
-        volume=volume1
-    )
-    partialVWAP2 = TezosOracle.computeVWAP(
-        high=high2,
-        low=low2,
-        close=close2,
-        volume=volume2
-    )
-    partialVWAP3 = TezosOracle.computeVWAP(
-        high=high3,
-        low=low3,
-        close=close3,
-        volume=volume3
-    )
-    expected=(partialVWAP1 + partialVWAP2 +
-                partialVWAP3) // (volume1 + volume2 + volume3)
-
-    scenario.verify(contract.data.computedPrice == expected)
+#     scenario.h2("WHEN an update is provided from the past.")
+#     scenario.h2("THEN the update fails.")
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=pastTime,
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=1,
+#             low=2,
+#             close=3,
+#             volume=4
+#         )
+#     ).run(sender=defaultOracleContractAddress, valid=False)
 
 
-@sp.add_test(name="Bounds computation to the number of data points")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Bounds computation to the number of data points")
+# @sp.add_test(name="Fails with updates for the wrong asset")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Fails with updates from the wrong asset")
 
-    scenario.h2("GIVEN a Normalizer contract set to only hold two data points")
-    numDataPoints=2
-    contract=NormalizerContract(numDataPoints=numDataPoints)
-    scenario += contract
+#     scenario.h2("GIVEN a Normalizer contract for the bitcoin price")
+#     contract=NormalizerContract(assetCode="BTC-USD")
+#     scenario += contract
 
-    scenario.h2("WHEN three updates are provided")
-    high1=1
-    low1=2
-    close1=3
-    volume1=4
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104530),
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=high1,
-            low=low1,
-            close=close1,
-            volume=volume1
-        )
-    ).run(sender=defaultOracleContractAddress)
+#     scenario.h2("WHEN an update is provided for XTZ-USD")
+#     scenario.h2("THEN the update fails.")
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104530),
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=1,
+#             low=2,
+#             close=3,
+#             volume=4
+#         )
+#     ).run(sender=defaultOracleContractAddress, valid=False)
 
-    high2=5
-    low2=6
-    close2=7
-    volume2=8
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104532),
-            end=sp.timestamp(1595104533),
-            open=3059701,
-            high=high2,
-            low=low2,
-            close=close2,
-            volume=volume2
-        )
-    ).run(sender=defaultOracleContractAddress)
+# @sp.add_test(name="Normalizes One Data Point")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Normalizes One Data Point")
 
-    high3=9
-    low3=10
-    close3=11
-    volume3=12
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104534),
-            end=sp.timestamp(1595104535),
-            open=3059701,
-            high=high3,
-            low=low3,
-            close=close3,
-            volume=volume3
-        )
-    ).run(sender=defaultOracleContractAddress)
+#     scenario.h2("GIVEN a Normalizer contract.")
+#     contract=NormalizerContract()
+#     scenario += contract
 
-    scenario.h2("THEN the contract is only tracking two updates")
-    scenario.verify(fifoDT.len(contract.data.prices) == 2)
-    scenario.verify(fifoDT.len(contract.data.volumes) == 2)
+#     high=1
+#     low=2
+#     close=3
+#     volume=4
 
-    scenario.h2("AND the computed price is the VWAP of the latter two updates")
-    partialVWAP2 = TezosOracle.computeVWAP(
-        high=high2,
-        low=low2,
-        close=close2,
-        volume=volume2
-    )
-    partialVWAP3 = TezosOracle.computeVWAP(
-        high=high3,
-        low=low3,
-        close=close3,
-        volume=volume3
-    )
-    expected=(partialVWAP2 + partialVWAP3) // (volume2 + volume3)
-    scenario.verify(contract.data.computedPrice == expected)
+#     scenario.h2("WHEN an update is provided")
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104530),
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=high,
+#             low=low,
+#             close=close,
+#             volume=volume
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     scenario.h2("THEN the ComputedPrice is the VWAP.")
+#     expected = TezosOracle.computeVWAP(
+#         high=high,
+#         low=low,
+#         close=close,
+#         volume=volume
+#     ) // volume
+#     scenario.verify(contract.data.computedPrice == expected)
+
+# @sp.add_test(name="Normalizes Three Data Points")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Normalizes Three Data Points")
+
+#     scenario.h2("GIVEN a Normalizer contract")
+#     contract=NormalizerContract()
+#     scenario += contract
+
+#     scenario.h2("WHEN three updates are provided")
+#     high1=1
+#     low1=2
+#     close1=3
+#     volume1=4
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104530),
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=high1,
+#             low=low1,
+#             close=close1,
+#             volume=volume1
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     high2=5
+#     low2=6
+#     close2=7
+#     volume2=8
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104532),
+#             end=sp.timestamp(1595104533),
+#             open=3059701,
+#             high=high2,
+#             low=low2,
+#             close=close2,
+#             volume=volume2
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     high3=9
+#     low3=10
+#     close3=11
+#     volume3=12
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104534),
+#             end=sp.timestamp(1595104535),
+#             open=3059701,
+#             high=high3,
+#             low=low3,
+#             close=close3,
+#             volume=volume3
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     scenario.h2("WHEN the ComputedPrice is the VWAP of the updates")
+#     partialVWAP1 = TezosOracle.computeVWAP(
+#         high=high1,
+#         low=low1,
+#         close=close1,
+#         volume=volume1
+#     )
+#     partialVWAP2 = TezosOracle.computeVWAP(
+#         high=high2,
+#         low=low2,
+#         close=close2,
+#         volume=volume2
+#     )
+#     partialVWAP3 = TezosOracle.computeVWAP(
+#         high=high3,
+#         low=low3,
+#         close=close3,
+#         volume=volume3
+#     )
+#     expected=(partialVWAP1 + partialVWAP2 +
+#                 partialVWAP3) // (volume1 + volume2 + volume3)
+
+#     scenario.verify(contract.data.computedPrice == expected)
+
+
+# @sp.add_test(name="Bounds computation to the number of data points")
+# def test():
+#     scenario=sp.test_scenario()
+#     scenario.h1("Bounds computation to the number of data points")
+
+#     scenario.h2("GIVEN a Normalizer contract set to only hold two data points")
+#     numDataPoints=2
+#     contract=NormalizerContract(numDataPoints=numDataPoints)
+#     scenario += contract
+
+#     scenario.h2("WHEN three updates are provided")
+#     high1=1
+#     low1=2
+#     close1=3
+#     volume1=4
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104530),
+#             end=sp.timestamp(1595104531),
+#             open=3059701,
+#             high=high1,
+#             low=low1,
+#             close=close1,
+#             volume=volume1
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     high2=5
+#     low2=6
+#     close2=7
+#     volume2=8
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104532),
+#             end=sp.timestamp(1595104533),
+#             open=3059701,
+#             high=high2,
+#             low=low2,
+#             close=close2,
+#             volume=volume2
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     high3=9
+#     low3=10
+#     close3=11
+#     volume3=12
+#     scenario += contract.update(
+#         makeMap(
+#             assetCode="XTZ-USD",
+#             start=sp.timestamp(1595104534),
+#             end=sp.timestamp(1595104535),
+#             open=3059701,
+#             high=high3,
+#             low=low3,
+#             close=close3,
+#             volume=volume3
+#         )
+#     ).run(sender=defaultOracleContractAddress)
+
+#     scenario.h2("THEN the contract is only tracking two updates")
+#     scenario.verify(fifoDT.len(contract.data.prices) == 2)
+#     scenario.verify(fifoDT.len(contract.data.volumes) == 2)
+
+#     scenario.h2("AND the computed price is the VWAP of the latter two updates")
+#     partialVWAP2 = TezosOracle.computeVWAP(
+#         high=high2,
+#         low=low2,
+#         close=close2,
+#         volume=volume2
+#     )
+#     partialVWAP3 = TezosOracle.computeVWAP(
+#         high=high3,
+#         low=low3,
+#         close=close3,
+#         volume=volume3
+#     )
+#     expected=(partialVWAP2 + partialVWAP3) // (volume2 + volume3)
+#     scenario.verify(contract.data.computedPrice == expected)
 
 #####################################################################
 # Test Helpers
