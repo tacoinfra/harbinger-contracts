@@ -111,16 +111,27 @@ class NormalizerContract(sp.Contract):
         # Calculate the volume
         self.data.computedPrice = self.data.prices.sum / self.data.volumes.sum
 
-    # Returns the value in the Normalizer.
+    # Returns the value in the Normalizer for the given asset.
     #
     # The normalized value is represented as a natural number with six
     # digits of precision. For instance $123.45 USD would be represented
     # as 123_450_000.
     #
-    # callback is a Contract reference which will be called with the normalized
-    # value.
+    # Parameters a pair of the asset code (ex. XTZ-USD) and a Contract 
+    # reference which will be called with the normalized value.
     @sp.entry_point
-    def get(self, callback):
+    def get(self, requestPair):
+        requestedAsset = sp.compute(sp.fst(requestPair))
+        callback = sp.compute(sp.snd(requestPair))
+
+        # Verify the sender is the whitelisted oracle contract.
+        sp.verify(
+            sp.sender == self.data.oracleContract,
+            message="bad sender"
+        )
+
+        assetData = 
+
         sp.transfer(self.data.computedPrice, sp.mutez(0), callback)
 
 #####################################################################
