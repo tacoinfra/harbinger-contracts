@@ -132,15 +132,19 @@ class NormalizerContract(sp.Contract):
     # reference which will be called with the normalized value.
     @sp.entry_point
     def get(self, requestPair):
+        # Destructure the arguments.
         requestedAsset = sp.compute(sp.fst(requestPair))
         callback = sp.compute(sp.snd(requestPair))
 
-        # Verify the sender is the whitelisted oracle contract.
+        # Verify this normalizer has data for the requested asset.
         sp.verify(
             self.data.assetMap.contains(requestedAsset),
             message="bad request"
         )
-        sp.transfer(self.data.assetMap[requestedAsset].computedPrice, sp.mutez(0), callback)
+
+        # Callback with the requested data.
+        requestedData = self.data.assetMap[requestedAsset].computedPrice
+        sp.transfer(requestedData, sp.mutez(0), callback)
 
 #####################################################################
 # Normalizer Tests
