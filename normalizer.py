@@ -31,7 +31,7 @@ class NormalizerContract(sp.Contract):
     #   numDataPoints(sp.TInt): The number of data points to normalize. Larger values provide a better VWAP but result in larger contract storage.
     def __init__(
         self,
-        assetCode="XTZ-USD",
+        assetCodes=["XTZ-USD"],
         oracleContractAddress=sp.address(
             "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"),
         numDataPoints=sp.int(3)
@@ -39,28 +39,30 @@ class NormalizerContract(sp.Contract):
         self.exception_optimization_level = "Unit"
         self.add_flag("no_comment")
 
-        # Populate the queues with an initial zero elements
-        pricesQueue = fifoDT()
-        volumesQueue = fifoDT()
-
         # Set last update timestamp to unix epoch.
         lastUpdateTime = sp.timestamp(0)
 
-        assetRecord = sp.record(
-            prices= pricesQueue,
-            volumes= volumesQueue,
-            lastUpdateTime= lastUpdateTime,
-            computedPrice= 0
-        )
+        initialValues = {}
+        for assetCode in assetCodes:
+            # Populate the queues with an initial zero elements
+            pricesQueue = fifoDT()
+            volumesQueue = fifoDT()
+
+            assetRecord = sp.record(
+                prices= pricesQueue,
+                volumes= volumesQueue,
+                lastUpdateTime= lastUpdateTime,
+                computedPrice= 0
+            )
+            initialValues[assetCode] = assetRecord
+
         assetMap = sp.big_map(
-            l={
-                assetCode: assetRecord
-            },
+            l=initialValues,
         )
 
         self.init(
                 assetMap=assetMap,
-                assetCodes=[assetCode],
+                assetCodes=assetCodes,
                 oracleContract=oracleContractAddress,
                 numDataPoints=numDataPoints
                 )
@@ -473,7 +475,7 @@ def test():
 
     scenario.h2("GIVEN a Normalizer contract")
     assetCode = "XTZ-USD"
-    contract=NormalizerContract(assetCode=assetCode)
+    contract=NormalizerContract(assetCodes=[assetCode])
     scenario += contract
 
     scenario.h2("AND a contract to call back to")
@@ -498,7 +500,7 @@ def test():
 
     scenario.h2("GIVEN a Normalizer contract")
     assetCode = "XTZ-USD"
-    contract=NormalizerContract(assetCode=assetCode)
+    contract=NormalizerContract(assetCodes=[assetCode])
     scenario += contract
 
     scenario.h2("AND a contract to call back to")
@@ -600,6 +602,138 @@ def test():
     )
     expected=(partialVWAP1 + partialVWAP2) // (volume1 + volume2)
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
+
+@sp.add_test(name="Computes correctly for multiple assets in parallel")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Computes correctly for multiple assets in parallel")
+
+    scenario.h2("GIVEN a Normalizer contract for two assets")
+    assetCode1 = "BTC-USD"
+    assetCode2 = "XTZ-USD"
+    contract=NormalizerContract(assetCodes = [assetCode1, assetCode2])
+    scenario += contract
+
+    scenario.h2("WHEN two updates are provided which touch both assets")
+    high1=1
+    open1=1
+    low1=2
+    close1=3
+    volume1=4
+
+    high2=5
+    open2=5
+    low2=6
+    close2=7
+    volume2=8
+
+    update1 = sp.big_map(
+        l={
+            assetCode1: makeOracleDataPairs(
+                sp.timestamp(1),
+                sp.timestamp(2),
+                open1,
+                high1,
+                low1,
+                close1,
+                volume1
+            ),
+            assetCode2: makeOracleDataPairs(
+                sp.timestamp(1),
+                sp.timestamp(2),
+                open2,
+                high2,
+                low2,
+                close2,
+                volume2
+            )
+        },
+        tkey=sp.TString,
+        tvalue=Harbinger.OracleDataType
+    )
+    scenario += contract.update(
+        update1
+    ).run(sender=defaultOracleContractAddress)
+
+    high3=9
+    open3=9
+    low3=10
+    close3=11
+    volume3=12
+
+    high4=13
+    open4=13
+    low4=14
+    close4=15
+    volume4=6
+
+    update2 = sp.big_map(
+        l={
+            assetCode1: makeOracleDataPairs(
+                sp.timestamp(3),
+                sp.timestamp(4),
+                open3,
+                high3,
+                low3,
+                close3,
+                volume3
+            ),
+            assetCode2: makeOracleDataPairs(
+                sp.timestamp(3),
+                sp.timestamp(4),
+                open4,
+                high4,
+                low4,
+                close4,
+                volume4
+            )
+        },
+        tkey=sp.TString,
+        tvalue=Harbinger.OracleDataType
+    )
+    scenario += contract.update(
+        update2
+    ).run(sender=defaultOracleContractAddress)
+
+    scenario.h2("THEN the contract is only tracking two updates for each asset")
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode1].prices) == 2)
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode1].volumes) == 2)
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode2].prices) == 2)
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode2].volumes) == 2)
+
+    scenario.h2("AND the computed price is the VWAP of the two updates")
+    partialVWAP1 = Harbinger.computeVWAP(
+        high=high1,
+        low=low1,
+        close=close1,
+        volume=volume1
+    )
+    partialVWAP2 = Harbinger.computeVWAP(
+        high=high2,
+        low=low2,
+        close=close2,
+        volume=volume2
+    )
+    partialVWAP3 = Harbinger.computeVWAP(
+        high=high3,
+        low=low3,
+        close=close3,
+        volume=volume3
+    )
+    partialVWAP4 = Harbinger.computeVWAP(
+        high=high4,
+        low=low4,
+        close=close4,
+        volume=volume4
+    )
+    expectedAssetCode1=(partialVWAP1 + partialVWAP3) // (volume1 + volume3)
+    expectedAssetCode2=(partialVWAP2 + partialVWAP4) // (volume2 + volume4)
+
+    scenario.verify(contract.data.assetMap[assetCode1].computedPrice == expectedAssetCode1)
+    scenario.verify(contract.data.assetMap[assetCode2].computedPrice == expectedAssetCode2)
+
+# TODO: Trim only affects one asset
+
 
 #####################################################################
 # Test Helpers
