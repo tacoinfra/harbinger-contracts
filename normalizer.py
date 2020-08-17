@@ -60,7 +60,7 @@ class NormalizerContract(sp.Contract):
 
         self.init(
                 assetMap=assetMap,
-                assetCode=assetCode,
+                assetCodes=[assetCode],
                 oracleContract=oracleContractAddress,
                 numDataPoints=numDataPoints
                 )
@@ -84,43 +84,45 @@ class NormalizerContract(sp.Contract):
             message="bad sender"
         )
 
-        # Retrieve the asset data from the map.
-        assetCode = self.data.assetCode
-        assetData = sp.compute(updateMap[self.data.assetCode])
+        # Iterate over assets this normalizer is tracking
+        sp.for assetCode in self.data.assetCodes:
+            # Only process updates if this normalizer is tracking the asset code.
+            sp.if updateMap.contains(assetCode):
+                assetData = updateMap.get(assetCode)
 
-        # Require updates be monotonically increasing in start times.
-        updateStartTime = sp.compute(sp.fst(assetData))
-        sp.verify(updateStartTime > self.data.assetMap[assetCode].lastUpdateTime)
+                # Require updates be monotonically increasing in start times.
+                updateStartTime = sp.compute(sp.fst(assetData))
+                sp.verify(updateStartTime > self.data.assetMap[assetCode].lastUpdateTime)
 
-        # Update the last updated time.
-        self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
+                # Update the last updated time.
+                self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
 
-        # Extract required information
-        endPair = sp.compute(sp.snd(assetData))
-        openPair = sp.compute(sp.snd(endPair))
-        highPair = sp.compute(sp.snd(openPair))
-        lowPair = sp.compute(sp.snd(highPair))
-        closeAndVolumePair = sp.compute(sp.snd(lowPair))
+                # Extract required information
+                endPair = sp.compute(sp.snd(assetData))
+                openPair = sp.compute(sp.snd(endPair))
+                highPair = sp.compute(sp.snd(openPair))
+                lowPair = sp.compute(sp.snd(highPair))
+                closeAndVolumePair = sp.compute(sp.snd(lowPair))
 
-        # Calculate the the price for this data point.
-        # average price * volume
-        high = sp.compute(sp.fst(highPair))
-        low = sp.compute(sp.fst(lowPair))
-        close = sp.compute(sp.fst(closeAndVolumePair))
-        volume = sp.compute(sp.snd(closeAndVolumePair))
-        volumePrice = ((high + low + close) / 3) * volume
+                # Calculate the the price for this data point.
+                # average price * volume
+                high = sp.compute(sp.fst(highPair))
+                low = sp.compute(sp.fst(lowPair))
+                close = sp.compute(sp.fst(closeAndVolumePair))
+                volume = sp.compute(sp.snd(closeAndVolumePair))
+                volumePrice = ((high + low + close) / 3) * volume
 
-        # Push the latest items to the FIFO queue
-        fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
-        fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+                # Push the latest items to the FIFO queue
+                fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
+                fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
 
-        # Trim the queue if it exceeds the number of data points.
-        sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
-            fifoDT.pop(self.data.assetMap[assetCode].prices)
-            fifoDT.pop(self.data.assetMap[assetCode].volumes)
+                # Trim the queue if it exceeds the number of data points.
+                sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
+                    fifoDT.pop(self.data.assetMap[assetCode].prices)
+                    fifoDT.pop(self.data.assetMap[assetCode].volumes)
 
-        # Calculate the volume
-        self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
+                # Calculate the volume
+                self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
 
     # Returns the value in the Normalizer for the given asset.
     #
@@ -244,31 +246,6 @@ def test():
         makeMap(
             assetCode="XTZ-USD",
             start=pastTime,
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=1,
-            low=2,
-            close=3,
-            volume=4
-        )
-    ).run(sender=defaultOracleContractAddress, valid=False)
-
-
-@sp.add_test(name="Fails with updates for the wrong asset")
-def test():
-    scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the wrong asset")
-
-    scenario.h2("GIVEN a Normalizer contract for the bitcoin price")
-    contract=NormalizerContract(assetCode="BTC-USD")
-    scenario += contract
-
-    scenario.h2("WHEN an update is provided for XTZ-USD")
-    scenario.h2("THEN the update fails.")
-    scenario += contract.update(
-        makeMap(
-            assetCode="XTZ-USD",
-            start=sp.timestamp(1595104530),
             end=sp.timestamp(1595104531),
             open=3059701,
             high=1,
@@ -539,6 +516,90 @@ def test():
 
     scenario.h2("THEN it fails.")
     scenario += contract.get(param).run(valid=False)
+
+@sp.add_test(name="Unrelated Assets do not affect normalizer")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Unrelated Assets do not affect normalizer")
+
+    scenario.h2("GIVEN a Normalizer contract")
+    contract=NormalizerContract()
+    scenario += contract
+
+    scenario.h2("WHEN two updates are provided for the asset")
+    high1=1
+    low1=2
+    close1=3
+    volume1=4
+    assetCode = "XTZ-USD"
+
+    scenario += contract.update(
+        makeMap(
+            assetCode=assetCode,
+            start=sp.timestamp(1595104530),
+            end=sp.timestamp(1595104531),
+            open=3059701,
+            high=high1,
+            low=low1,
+            close=close1,
+            volume=volume1
+        )
+    ).run(sender=defaultOracleContractAddress)
+
+    high2=5
+    low2=6
+    close2=7
+    volume2=8
+    scenario += contract.update(
+        makeMap(
+            assetCode=assetCode,
+            start=sp.timestamp(1595104532),
+            end=sp.timestamp(1595104533),
+            open=3059701,
+            high=high2,
+            low=low2,
+            close=close2,
+            volume=volume2
+        )
+    ).run(sender=defaultOracleContractAddress)
+
+    # AND a third update is provided for an unrelated asset
+    high3=9
+    low3=10
+    close3=11
+    volume3=12
+    scenario += contract.update(
+        makeMap(
+            assetCode="BTC-USD",                    # Not XTZ-USD
+            start=sp.timestamp(1595104534),
+            end=sp.timestamp(1595104535),
+            open=3059701,
+            high=high3,
+            low=low3,
+            close=close3,
+            volume=volume3
+        )
+    ).run(sender=defaultOracleContractAddress)
+
+    scenario.h2("THEN the contract is only tracking two updates for the tracked asset")
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].prices) == 2)
+    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].volumes) == 2)
+
+    scenario.h2("AND the computed price is the VWAP of the two updates")
+    partialVWAP1 = Harbinger.computeVWAP(
+        high=high1,
+        low=low1,
+        close=close1,
+        volume=volume1
+    )
+    partialVWAP2 = Harbinger.computeVWAP(
+        high=high2,
+        low=low2,
+        close=close2,
+        volume=volume2
+    )
+    expected=(partialVWAP1 + partialVWAP2) // (volume1 + volume2)
+    scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
 
 #####################################################################
 # Test Helpers
