@@ -87,9 +87,9 @@ class NormalizerContract(sp.Contract):
         )
 
         # Iterate over assets this normalizer is tracking
-        sp.for assetCode in self.data.assetCodes:
+        with sp.for_('assetCode', self.data.assetCodes) as assetCode:
             # Only process updates if this normalizer is tracking the asset code.
-            sp.if updateMap.contains(assetCode):
+            with sp.if_(updateMap.contains(assetCode)):
                 assetData = updateMap.get(assetCode)
 
                 # Require updates be monotonically increasing in start times.
@@ -119,7 +119,7 @@ class NormalizerContract(sp.Contract):
                 fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
 
                 # Trim the queue if it exceeds the number of data points.
-                sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
+                with sp.if_(fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints):
                     fifoDT.pop(self.data.assetMap[assetCode].prices)
                     fifoDT.pop(self.data.assetMap[assetCode].volumes)
 
@@ -774,3 +774,4 @@ class DummyContract(sp.Contract):
     @sp.entry_point
     def callback(self, params):
         pass
+
