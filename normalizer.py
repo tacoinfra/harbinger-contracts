@@ -1,6 +1,6 @@
 import smartpy as sp
 
-TezosOracle = sp.import_script_from_url("file:common.py")
+Harbinger = sp.import_script_from_url("file:common.py")
 FifoQueue = sp.import_script_from_url("file:fifo_queue.py")
 
 # We need only one instance of FifoDataType
@@ -76,7 +76,7 @@ class NormalizerContract(sp.Contract):
     # { <asset code | string>: Pair <start time | timestamp > (Pair <end time | timestamp> (Pair <open | nat> Pair( <high | nat> Pair( <low | nat> Pair( <close> <volume>))))) }
     @sp.entry_point
     def update(self, updateMap):
-        sp.set_type(updateMap, sp.TBigMap(sp.TString, TezosOracle.OracleDataType))
+        sp.set_type(updateMap, sp.TBigMap(sp.TString, Harbinger.OracleDataType))
 
         # Verify the sender is the whitelisted oracle contract.
         sp.verify(
@@ -122,17 +122,29 @@ class NormalizerContract(sp.Contract):
         # Calculate the volume
         self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
 
-    # Returns the value in the Normalizer.
+    # Returns the value in the Normalizer for the given asset.
     #
     # The normalized value is represented as a natural number with six
     # digits of precision. For instance $123.45 USD would be represented
     # as 123_450_000.
     #
-    # callback is a Contract reference which will be called with the normalized
-    # value.
+    # Parameters a pair of the asset code (ex. XTZ-USD) and a Contract 
+    # reference which will be called with the normalized value.
     @sp.entry_point
-    def get(self, callback):
-        sp.transfer(self.data.assetMap[self.data.assetCode].computedPrice, sp.mutez(0), callback)
+    def get(self, requestPair):
+        # Destructure the arguments.
+        requestedAsset = sp.compute(sp.fst(requestPair))
+        callback = sp.compute(sp.snd(requestPair))
+
+        # Verify this normalizer has data for the requested asset.
+        sp.verify(
+            self.data.assetMap.contains(requestedAsset),
+            message="bad request"
+        )
+
+        # Callback with the requested data.
+        requestedData = self.data.assetMap[requestedAsset].computedPrice
+        sp.transfer(requestedData, sp.mutez(0), callback)
 
 #####################################################################
 # Normalizer Tests
@@ -297,7 +309,7 @@ def test():
     ).run(sender=defaultOracleContractAddress)
 
     scenario.h2("THEN the ComputedPrice is the VWAP.")
-    expected = TezosOracle.computeVWAP(
+    expected = Harbinger.computeVWAP(
         high=high,
         low=low,
         close=close,
@@ -369,19 +381,19 @@ def test():
     ).run(sender=defaultOracleContractAddress)
 
     scenario.h2("WHEN the ComputedPrice is the VWAP of the updates")
-    partialVWAP1 = TezosOracle.computeVWAP(
+    partialVWAP1 = Harbinger.computeVWAP(
         high=high1,
         low=low1,
         close=close1,
         volume=volume1
     )
-    partialVWAP2 = TezosOracle.computeVWAP(
+    partialVWAP2 = Harbinger.computeVWAP(
         high=high2,
         low=low2,
         close=close2,
         volume=volume2
     )
-    partialVWAP3 = TezosOracle.computeVWAP(
+    partialVWAP3 = Harbinger.computeVWAP(
         high=high3,
         low=low3,
         close=close3,
@@ -462,13 +474,13 @@ def test():
     scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].volumes) == 2)
 
     scenario.h2("AND the computed price is the VWAP of the latter two updates")
-    partialVWAP2 = TezosOracle.computeVWAP(
+    partialVWAP2 = Harbinger.computeVWAP(
         high=high2,
         low=low2,
         close=close2,
         volume=volume2
     )
-    partialVWAP3 = TezosOracle.computeVWAP(
+    partialVWAP3 = Harbinger.computeVWAP(
         high=high3,
         low=low3,
         close=close3,
@@ -476,6 +488,57 @@ def test():
     )
     expected=(partialVWAP2 + partialVWAP3) // (volume2 + volume3)
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
+
+@sp.add_test(name="Calls back correctly when a valid asset is provided")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Calls back correctly when a valid asset is provided")
+
+    scenario.h2("GIVEN a Normalizer contract")
+    assetCode = "XTZ-USD"
+    contract=NormalizerContract(assetCode=assetCode)
+    scenario += contract
+
+    scenario.h2("AND a contract to call back to")
+    dummyContract = DummyContract()
+    scenario += dummyContract
+
+    scenario.h2("WHEN a request is made")
+    contractHandle = sp.contract(
+        sp.TNat,
+        dummyContract.address,
+        entry_point = "callback"
+    ).open_some()
+    param = (assetCode, contractHandle)
+
+    scenario.h2("THEN it succeeds.")
+    scenario += contract.get(param)
+
+@sp.add_test(name="Fails a get request when an invalid asset is provided")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Fails a get request when an invalid asset is provided")
+
+    scenario.h2("GIVEN a Normalizer contract")
+    assetCode = "XTZ-USD"
+    contract=NormalizerContract(assetCode=assetCode)
+    scenario += contract
+
+    scenario.h2("AND a contract to call back to")
+    dummyContract = DummyContract()
+    scenario += dummyContract
+
+    scenario.h2("WHEN a request is made")
+    contractHandle = sp.contract(
+        sp.TNat,
+        dummyContract.address,
+        entry_point = "callback"
+    ).open_some()
+    badAssetCode = "BTC-USD" # Not XTZ-USD
+    param = (badAssetCode, contractHandle)
+
+    scenario.h2("THEN it fails.")
+    scenario += contract.get(param).run(valid=False)
 
 #####################################################################
 # Test Helpers
@@ -505,5 +568,14 @@ def makeMap(assetCode, start, end, open, high, low, close, volume):
             )
         },
         tkey=sp.TString,
-        tvalue=TezosOracle.OracleDataType
+        tvalue=Harbinger.OracleDataType
     )
+
+# A dummy contract which can receive data from a normalizer.
+class DummyContract(sp.Contract):
+    def __init__(self, **kargs):
+        self.init(**kargs)
+
+    @sp.entry_point
+    def callback(self, params):
+        pass
