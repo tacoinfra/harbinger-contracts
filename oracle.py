@@ -1,9 +1,9 @@
 import smartpy as sp
 
-TezosOracle = sp.import_script_from_url("file:common.py")
+Harbinger = sp.import_script_from_url("file:common.py")
 
 # Data type that represents a signed update to the Oracle.
-SignedOracleDataType = sp.TPair(sp.TSignature, TezosOracle.OracleDataType)
+SignedOracleDataType = sp.TPair(sp.TSignature, Harbinger.OracleDataType)
 
 #####################################################################
 # An Oracle contract accepts signed updates for a list of assets.
@@ -49,7 +49,7 @@ class OracleContract(sp.Contract):
                 "XTZ-USD": (sp.timestamp(0), (sp.timestamp(0), (0, (0, (0, (0, 0))))))
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     ):
         self.exception_optimization_level = "Unit"
@@ -283,7 +283,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -390,7 +390,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -447,7 +447,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -526,7 +526,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -581,7 +581,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -646,7 +646,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract
@@ -713,7 +713,7 @@ def test():
                 assetCode: initialOracleData
             },
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
     )
     scenario += contract

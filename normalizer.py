@@ -1,6 +1,6 @@
 import smartpy as sp
 
-TezosOracle = sp.import_script_from_url("file:common.py")
+Harbinger = sp.import_script_from_url("file:common.py")
 FifoQueue = sp.import_script_from_url("file:fifo_queue.py")
 
 # We need only one instance of FifoDataType
@@ -76,7 +76,7 @@ class NormalizerContract(sp.Contract):
     # { <asset code | string>: Pair <start time | timestamp > (Pair <end time | timestamp> (Pair <open | nat> Pair( <high | nat> Pair( <low | nat> Pair( <close> <volume>))))) }
     @sp.entry_point
     def update(self, updateMap):
-        sp.set_type(updateMap, sp.TBigMap(sp.TString, TezosOracle.OracleDataType))
+        sp.set_type(updateMap, sp.TBigMap(sp.TString, Harbinger.OracleDataType))
 
         # Verify the sender is the whitelisted oracle contract.
         sp.verify(
@@ -305,7 +305,7 @@ def test():
     ).run(sender=defaultOracleContractAddress)
 
     scenario.h2("THEN the ComputedPrice is the VWAP.")
-    expected = TezosOracle.computeVWAP(
+    expected = Harbinger.computeVWAP(
         high=high,
         low=low,
         close=close,
@@ -377,19 +377,19 @@ def test():
     ).run(sender=defaultOracleContractAddress)
 
     scenario.h2("WHEN the ComputedPrice is the VWAP of the updates")
-    partialVWAP1 = TezosOracle.computeVWAP(
+    partialVWAP1 = Harbinger.computeVWAP(
         high=high1,
         low=low1,
         close=close1,
         volume=volume1
     )
-    partialVWAP2 = TezosOracle.computeVWAP(
+    partialVWAP2 = Harbinger.computeVWAP(
         high=high2,
         low=low2,
         close=close2,
         volume=volume2
     )
-    partialVWAP3 = TezosOracle.computeVWAP(
+    partialVWAP3 = Harbinger.computeVWAP(
         high=high3,
         low=low3,
         close=close3,
@@ -470,13 +470,13 @@ def test():
     scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].volumes) == 2)
 
     scenario.h2("AND the computed price is the VWAP of the latter two updates")
-    partialVWAP2 = TezosOracle.computeVWAP(
+    partialVWAP2 = Harbinger.computeVWAP(
         high=high2,
         low=low2,
         close=close2,
         volume=volume2
     )
-    partialVWAP3 = TezosOracle.computeVWAP(
+    partialVWAP3 = Harbinger.computeVWAP(
         high=high3,
         low=low3,
         close=close3,
@@ -485,91 +485,56 @@ def test():
     expected=(partialVWAP2 + partialVWAP3) // (volume2 + volume3)
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
 
-
-@sp.add_test(name="New 1")
+@sp.add_test(name="Calls back correctly when a valid asset is provided")
 def test():
     scenario=sp.test_scenario()
-    scenario.h1("Bounds computation to the number of data points")
+    scenario.h1("Calls back correctly when a valid asset is provided")
 
-    scenario.h2("GIVEN a Normalizer contract set to only hold two data points")
-    numDataPoints=2
-    contract=NormalizerContract(numDataPoints=numDataPoints)
+    scenario.h2("GIVEN a Normalizer contract")
+    assetCode = "XTZ-USD"
+    contract=NormalizerContract(assetCode=assetCode)
     scenario += contract
 
-    scenario.h2("WHEN three updates are provided")
-    high1=1
-    low1=2
-    close1=3
-    volume1=4
+    scenario.h2("AND a contract to call back to")
+    dummyContract = DummyContract()
+    scenario += dummyContract
+
+    scenario.h2("WHEN a request is made")
+    contractHandle = sp.contract(
+        sp.TNat,
+        dummyContract.address,
+        entry_point = "callback"
+    ).open_some()
+    param = (assetCode, contractHandle)
+
+    scenario.h2("THEN it succeeds.")
+    scenario += contract.get(param)
+
+@sp.add_test(name="Fails a get request when an invalid asset is provided")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Fails a get request when an invalid asset is provided")
+
+    scenario.h2("GIVEN a Normalizer contract")
     assetCode = "XTZ-USD"
+    contract=NormalizerContract(assetCode=assetCode)
+    scenario += contract
 
-    scenario += contract.update(
-        makeMap(
-            assetCode=assetCode,
-            start=sp.timestamp(1595104530),
-            end=sp.timestamp(1595104531),
-            open=3059701,
-            high=high1,
-            low=low1,
-            close=close1,
-            volume=volume1
-        )
-    ).run(sender=defaultOracleContractAddress)
+    scenario.h2("AND a contract to call back to")
+    dummyContract = DummyContract()
+    scenario += dummyContract
 
-    high2=5
-    low2=6
-    close2=7
-    volume2=8
-    scenario += contract.update(
-        makeMap(
-            assetCode=assetCode,
-            start=sp.timestamp(1595104532),
-            end=sp.timestamp(1595104533),
-            open=3059701,
-            high=high2,
-            low=low2,
-            close=close2,
-            volume=volume2
-        )
-    ).run(sender=defaultOracleContractAddress)
+    scenario.h2("WHEN a request is made")
+    contractHandle = sp.contract(
+        sp.TNat,
+        dummyContract.address,
+        entry_point = "callback"
+    ).open_some()
+    badAssetCode = "BTC-USD" # Not XTZ-USD
+    param = (badAssetCode, contractHandle)
 
-    high3=9
-    low3=10
-    close3=11
-    volume3=12
-    scenario += contract.update(
-        makeMap(
-            assetCode=assetCode,
-            start=sp.timestamp(1595104534),
-            end=sp.timestamp(1595104535),
-            open=3059701,
-            high=high3,
-            low=low3,
-            close=close3,
-            volume=volume3
-        )
-    ).run(sender=defaultOracleContractAddress)
-
-    scenario.h2("THEN the contract is only tracking two updates")
-    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].prices) == 2)
-    scenario.verify(fifoDT.len(contract.data.assetMap[assetCode].volumes) == 2)
-
-    scenario.h2("AND the computed price is the VWAP of the latter two updates")
-    partialVWAP2 = TezosOracle.computeVWAP(
-        high=high2,
-        low=low2,
-        close=close2,
-        volume=volume2
-    )
-    partialVWAP3 = TezosOracle.computeVWAP(
-        high=high3,
-        low=low3,
-        close=close3,
-        volume=volume3
-    )
-    expected=(partialVWAP2 + partialVWAP3) // (volume2 + volume3)
-    scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
-
+    scenario.h2("THEN it fails.")
+    scenario += contract.get(param).run(valid=False)
 
 #####################################################################
 # Test Helpers
@@ -599,5 +564,14 @@ def makeMap(assetCode, start, end, open, high, low, close, volume):
             )
         },
         tkey=sp.TString,
-        tvalue=TezosOracle.OracleDataType
+        tvalue=Harbinger.OracleDataType
     )
+
+# A dummy contract which can receive data from a normalizer.
+class DummyContract(sp.Contract):
+    def __init__(self, **kargs):
+        self.init(**kargs)
+
+    @sp.entry_point
+    def callback(self, params):
+        pass
