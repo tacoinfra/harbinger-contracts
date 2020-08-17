@@ -44,17 +44,17 @@ class NormalizerContract(sp.Contract):
         self.exception_optimization_level = "Unit"
         self.add_flag("no_comment")
 
-        assetRecord = sp.record({
-            "pricesQueue": fifoDT(),
-            "volumesQueue": fifoDT(),
-            "lastUpdateTime": sp.timestamp(0),
-            "computedPrice": 0
-        })
+        assetRecord = sp.record(
+            pricesQueue= fifoDT(),
+            volumesQueue= fifoDT(),
+            lastUpdateTime= sp.timestamp(0),
+            computedPrice= 0
+        )
 
         # A map of all assets to their data.
         assetMap = sp.big_map(
             l={
-                assetCode: fifoDT()
+                assetCode: assetRecord
             },
         )
 
@@ -89,10 +89,10 @@ class NormalizerContract(sp.Contract):
 
         # Require updates be monotonically increasing in start times.
         updateStartTime = sp.compute(sp.fst(assetData))
-        sp.verify(updateStartTime > self.data.assetMap[assetCode].lastUpdateTime)
+        sp.verify(updateStartTime > self.data.assetMap[self.data.assetCode].lastUpdateTime)
 
         # Update the last updated time.
-        self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
+        self.data.assetMap[self.data.assetCode].lastUpdateTime = updateStartTime
 
         # Extract required information
         endPair = sp.compute(sp.snd(assetData))
@@ -110,16 +110,16 @@ class NormalizerContract(sp.Contract):
         volumePrice = ((high + low + close) / 3) * volume
 
         # Push the latest items to the FIFO queue
-        fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
-        fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+        fifoDT.push(self.data.assetMap[self.data.assetCode].prices, volumePrice)
+        fifoDT.push(self.data.assetMap[self.data.assetCode].volumes, volume)
 
         # Trim the queue if it exceeds the number of data points.
-        with sp.if_(fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints):
-            fifoDT.pop(self.data.assetMap[assetCode].prices)
-            fifoDT.pop(self.data.assetMap[assetCode].volumes)
+        with sp.if_(fifoDT.len(self.data.assetMap[self.data.assetCode].prices) > self.data.numDataPoints):
+            fifoDT.pop(self.data.assetMap[self.data.assetCode].prices)
+            fifoDT.pop(self.data.assetMap[self.data.assetCode].volumes)
 
         # Calculate the volume
-        self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
+        self.data.assetMap[self.data.assetCode].computedPrice = self.data.assetMap[self.data.assetCode].prices.sum / self.data.assetMap[self.data.assetCode].volumes.sum
 
     # Returns the value in the Normalizer.
     #
@@ -143,8 +143,7 @@ def test():
     scenario.h1("Fails when data is pushed from bad address")
 
     scenario.h2("GIVEN a Normalizer contract whitelisted to an address")
-    contract=NormalizerContract(
-    )
+    contract = NormalizerContract()
     scenario += contract
 
     scenario.h2("WHEN an update is pushed from the wrong address")
