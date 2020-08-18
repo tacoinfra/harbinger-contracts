@@ -25,25 +25,22 @@ code
             PACK;       # bytes : @parameter%revoke : @storage
             SWAP;       # @parameter%revoke : bytes : @storage
             DIG 2;      # @storage : @parameter%revoke : bytes
-            DUP;        # @storage : @storage : @parameter%revoke : bytes
-            DUG 3;      # @storage : @parameter%revoke : bytes : @storage
-            CDR;        # option key : @parameter%revoke : bytes : @storage
+            CDR;        # option key : @parameter%revoke : bytes
             IF_SOME
               {}
               {
-                UNIT;       # unit : @parameter%revoke : bytes : @storage
+                UNIT;       # unit : @parameter%revoke : bytes
                 FAILWITH;   # FAILED
-              }; # @some : @parameter%revoke : bytes : @storage
-            CHECK_SIGNATURE; # bool : @storage
+              }; # @some : @parameter%revoke : bytes
+            CHECK_SIGNATURE; # bool
             IF
               {}
               {
-                UNIT;       # unit : @storage
+                UNIT;       # unit
                 FAILWITH;   # FAILED
-              }; # @storage
-            CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))
-            NONE key;   # option key : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))
-            SWAP;       # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key
+              }; # 
+            NONE key;   # option key
+            EMPTY_BIG_MAP string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))); # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : option key
             PAIR;       # pair (big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) (option key)
           }
           {
