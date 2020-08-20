@@ -1,9 +1,0 @@
-parameter unit;
-storage   unit;
-code
-  {
-    CDR;        # @storage
-    # == callback == # @storage
-    NIL operation; # list operation : @storage
-    PAIR;       # pair (list operation) @storage
-  };
