@@ -295,7 +295,7 @@ def test():
         )
     ).run(sender=defaultOracleContractAddress)
 
-    scenario.h2("THEN the original time is still reported.")
+    scenario.h2("THEN the original data is still reported.")
     expected = Harbinger.computeVWAP(
         high=high1,
         low=low1,
