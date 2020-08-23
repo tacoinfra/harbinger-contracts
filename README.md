@@ -2,7 +2,7 @@
 
 This repository contains reference implementations for the smart contracts that make up Harbinger.  To get started with Harbinger, visit the [main documentation](https://github.com/tacoinfra/harbinger).
 
-This library provides functionality for interacting with the Harbinger oracle system. Users who want to post prices might also be interested in [Harbinger CLI]() or  [Harbinger Poster]() which is a hosted component providing similar functionality for posting data to Harbinger. Entities who wish to sign prices for Harbinger may want to look at [Harbinger Signer](). Developers of new Harbinger components may be interested in [harbinger-lib]().
+This library provides functionality for interacting with the Harbinger oracle system. Users who want to post prices might also be interested in [Harbinger CLI](https://github.com/tacoinfra/harbinger-cli) or  [Harbinger Poster](https://github.com/tacoinfra/harbinger-poster) which is a hosted component providing similar functionality for posting data to Harbinger. Entities who wish to sign prices for Harbinger may want to look at [Harbinger Signer](https://github.com/tacoinfra/harbinger-signer). Developers of new Harbinger components may be interested in [harbinger-lib](https://github.com/tacoinfra/harbinger-lib).
 
 ## File Structure
 
@@ -68,4 +68,4 @@ A normalizer contract has the following entrypoints:
 
 ## Credits
 
-Harbinger is written and maintained by [Luke Youngblood]() and [Keefer Taylor](). 
+Harbinger is written and maintained by [Luke Youngblood](https://github.com/lyoungblood) and [Keefer Taylor](https://github.com/keefertaylor). 
