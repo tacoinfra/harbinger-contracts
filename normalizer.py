@@ -183,7 +183,7 @@ def test():
 @sp.add_test(name="Fails with updates from the same time")
 def test():
     scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the past")
+    scenario.h1("Fails with updates from the same time")
 
     scenario.h2("GIVEN a Normalizer contract with an update at a given time = 1")
     assetCode="XTZ-USD"
@@ -241,15 +241,13 @@ def test():
     ) // volume1
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
 
-@sp.add_test(name="Fails with updates from the past time")
+@sp.add_test(name="Fails with updates from the past")
 def test():
     scenario=sp.test_scenario()
     scenario.h1("Fails with updates from the past")
 
-    scenario.h2(
-        "GIVEN a Normalizer contract with an update at a current time and a time in the past")
-    assetCode1="XTZ-USD"
-    assetCode2="BTC-USD"
+    scenario.h2("GIVEN a Normalizer contract with an update")
+    assetCode="XTZ-USD"
 
     contract=NormalizerContract()
     scenario += contract
@@ -274,34 +272,9 @@ def test():
             volume=volume1
         )
     ).run(sender=defaultOracleContractAddress)
-    
-    scenario += contract.update(
-        l={
-            assetCode1: makeOracleDataPairs(
-                start1,
-                end1,
-                asset1Open1,
-                asset1High1,
-                asset1Low1,
-                asset1Close1,
-                asset1Volume1
-            ),
-            assetCode2: makeOracleDataPairs(
-                start1,
-                end1,
-                asset2Open2,
-                asset2High2,
-                asset2Low2,
-                asset2Close2,
-                asset2Volume2
-            )
-        },
-        tkey=sp.TString,
-        tvalue=Harbinger.OracleDataType
-    ).run(sender=defaultOracleContractAddress)
 
-    scenario.h2("WHEN an update is provided in the past.")
-    start2=sp.timestamp(1)
+    scenario.h2("WHEN an update is provided at in the past")
+    start2 =sp.timestamp(1)
     end2=sp.timestamp(2)
     open2=6
     high2=7
@@ -312,7 +285,7 @@ def test():
     scenario += contract.update(
         makeMap(
             assetCode=assetCode,
-            start=start1,
+            start=start2,
             end=end2,
             open=open2,
             high=high2,
@@ -330,7 +303,6 @@ def test():
         volume=volume1
     ) // volume1
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
-
 
 @sp.add_test(name="Normalizes stale assets correctly")
 def test():
