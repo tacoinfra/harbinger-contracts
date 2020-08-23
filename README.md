@@ -18,7 +18,7 @@ Additionally, the following files provide helper functionality and are not top-l
 
 ## Building and Testing
 
-Harbinger contracts are written in [SmartPy](). Please consult the [SmartPy Documentation]() for instructions on how to install and get started with the SmartPy command line tools. 
+Harbinger contracts are written in [SmartPy](https://smartpy.io/). Please consult the [SmartPy Documentation](https://smartpy.io/demo/reference.html) for instructions on how to install and get started with the SmartPy command line tools. 
 
 The fastest way to test and compile the contracts is to use the provided helper script:
 ```shell
