@@ -326,13 +326,14 @@ def test():
     asset1Close1=4
     asset1Volume1=5
 
-    asset2Open2=6
-    asset2High2=7
-    asset2Low2=8
-    asset2Close2=9
-    asset2Volume2=10
+    asset2Open1=6
+    asset2High1=7
+    asset2Low1=8
+    asset2Close1=9
+    asset2Volume1=10
 
     scenario += contract.update(
+        sp.big_map(
         l={
             assetCode1: makeOracleDataPairs(
                 start1,
@@ -346,15 +347,16 @@ def test():
             assetCode2: makeOracleDataPairs(
                 start1,
                 end1,
-                asset2Open2,
-                asset2High2,
-                asset2Low2,
-                asset2Close2,
-                asset2Volume2
+                asset2Open1,
+                asset2High1,
+                asset2Low1,
+                asset2Close1,
+                asset2Volume1
             )
         },
         tkey=sp.TString,
         tvalue=Harbinger.OracleDataType
+        )
     ).run(sender=defaultOracleContractAddress)
   
     scenario.h2("AND a second set of updates where one asset has a stale set")
@@ -374,6 +376,7 @@ def test():
     assetVolume2=20
 
     scenario += contract.update(
+        sp.big_map(
         l={
             assetCode1: makeOracleDataPairs(
                 start2,
@@ -396,25 +399,33 @@ def test():
         },
         tkey=sp.TString,
         tvalue=Harbinger.OracleDataType
+        )
     ).run(sender=defaultOracleContractAddress)
   
-    # scenario.h2("THEN the asset with two valid updates computes a VWAP based on two updates.")
-    # expected = Harbinger.computeVWAP(
-    #     high=high1,
-    #     low=low1,
-    #     close=close1,
-    #     volume=volume1
-    # ) // volume1
-    # scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
+    scenario.h2("THEN the asset with two valid updates computes a VWAP based on two updates.")
+    asset1PartialVWAP1 = Harbinger.computeVWAP(
+        high=asset1High1,
+        low=asset1Low1,
+        close=asset1Close1,
+        volume=asset1Volume1
+    ) 
+    asset1PartialVWAP2 = Harbinger.computeVWAP(
+        high=asset1High2,
+        low=asset1Low2,
+        close=asset1Close2,
+        volume=asset1Volume2
+    ) 
+    asset1Expected = (asset1PartialVWAP1 + asset1PartialVWAP2) // (asset1Volume1 + asset1Volume2)
+    scenario.verify(contract.data.assetMap[assetCode1].computedPrice == asset1Expected)
 
-    # scenario.h2("AND the asset with one valid update computes a VWAP based on the first update.")
-    # expected = Harbinger.computeVWAP(
-    #     high=high1,
-    #     low=low1,
-    #     close=close1,
-    #     volume=volume1
-    # ) // volume1
-    # scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
+    scenario.h2("AND the asset with one valid update computes a VWAP based only on the first update.")
+    asset1Expected = Harbinger.computeVWAP(
+        high=asset2High1,
+        low=asset2Low1,
+        close=asset2Close1,
+        volume=asset2Volume1
+    ) // asset2Volume1
+    scenario.verify(contract.data.assetMap[assetCode2].computedPrice == asset1Expected)
 
 @sp.add_test(name="Normalizes One Data Point")
 def test():
