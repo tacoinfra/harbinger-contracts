@@ -1,0 +1,22 @@
+parameter (pair (big_map %oracleData string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) (option %publicKey key));
+storage   unit;
+code
+  {
+    DUP;        # pair @parameter @storage : pair @parameter @storage
+    CDR;        # @storage : pair @parameter @storage
+    SWAP;       # pair @parameter @storage : @storage
+    CAR;        # @parameter : @storage
+    # == verify ==
+    # sp.verify(~ (params.k0.oracleData.contains('BTC-USD'))) # @parameter : @storage
+    CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    PUSH string "BTC-USD"; # string : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    MEM;        # bool : @storage
+    IF
+      {
+        PUSH string "WrongCondition: ~ (params.k0.oracleData.contains('BTC-USD'))"; # string : @storage
+        FAILWITH;   # FAILED
+      }
+      {}; # @storage
+    NIL operation; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };
