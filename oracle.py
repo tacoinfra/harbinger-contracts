@@ -586,7 +586,7 @@ def test():
 @sp.add_test(name="Untracked Asset does not update oracle")
 def test():
     scenario = sp.test_scenario()
-    scenario.h1("Update Fails With Untracked Asset")
+    scenario.h1("Untracked Asset does not update oracle")
 
     scenario.h2("GIVEN an Oracle contract tracking an asset")
     assetCode = "XTZ-USD"
