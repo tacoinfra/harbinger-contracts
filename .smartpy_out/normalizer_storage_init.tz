@@ -1,1 +1,0 @@
-(Pair (Pair {"XTZ-USD"; "BTC-USD"} {Elt "BTC-USD" (Pair (Pair 0 "0") (Pair (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)) (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)))); Elt "XTZ-USD" (Pair (Pair 0 "0") (Pair (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)) (Pair (Pair 0 -1) (Pair {Elt 0 0} 0))))}) (Pair 3 "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"))
