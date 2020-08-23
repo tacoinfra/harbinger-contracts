@@ -80,27 +80,23 @@ class OracleContract(sp.Contract):
             newData = sp.compute(sp.snd(assetData.value))
 
             # Verify Oracle is tracking this asset.
-            sp.verify(
-                self.data.oracleData.contains(assetName),
-                "bad asset"
-            )
+            sp.if self.data.oracleData.contains(assetName):
+                # Verify start timestamp is newer than the last update.
+                oldData = sp.compute(self.data.oracleData[assetName])
+                oldStartTime = sp.compute(sp.fst(oldData))
+                newStartTime = sp.compute(sp.fst(newData))    
+                sp.if newStartTime > oldStartTime:                
+                    # Verify signature.
+                    bytes = sp.pack((assetName, newData))
+                    sp.verify(
+                        sp.check_signature(
+                            self.data.publicKey.open_some(), signature, bytes
+                        ),
+                        "bad sig"
+                    )
 
-            # Verify signature.
-            bytes = sp.pack((assetName, newData))
-            sp.verify(
-                sp.check_signature(
-                    self.data.publicKey.open_some(), signature, bytes),
-                "bad sig"
-            )
-
-            # Verify start timestamp is newer than the last update.
-            oldData = sp.compute(self.data.oracleData[assetName])
-            oldStartTime = sp.compute(sp.fst(oldData))
-            newStartTime = sp.compute(sp.fst(newData))
-            sp.verify(newStartTime > oldStartTime, "bad time")
-
-            # Replace the data.
-            self.data.oracleData[assetName] = newData
+                    # Replace the data.
+                    self.data.oracleData[assetName] = newData
 
     # Revoke the Oracle.
     #
@@ -383,10 +379,10 @@ def test():
     scenario.verify(oracleVolume == volume2)
 
 
-@sp.add_test(name="Update Fails With Data From The Same Timestamp")
+@sp.add_test(name="Update Correctly Processes Data From The Same Timestamp")
 def test():
     scenario = sp.test_scenario()
-    scenario.h1("Update Fails With Data From The Same Timestamp")
+    scenario.h1("Update Correctly Processes Data From The Same Timestamp")
 
     scenario.h2("GIVEN an Oracle contract")
     assetCode = "XTZ-USD"
@@ -405,44 +401,91 @@ def test():
     scenario.h2("AND an update")
     start = sp.timestamp(1)
     end = sp.timestamp(2)
-    open = 3
-    high = 4
-    low = 5
-    close = 6
-    volume = 7
-    updateData = (
+    open1 = 3
+    high1 = 4
+    low1 = 5
+    close1 = 6
+    volume1 = 7
+    updateData1 = (
         start,
         (end,
-         (open,
-          (high,
-           (low,
-            (close, volume))))))
-    message = sp.pack((assetCode, updateData))
-    signature = sp.make_signature(
+         (open1,
+          (high1,
+           (low1,
+            (close1, volume1))))))
+    message1 = sp.pack((assetCode, updateData1))
+    signature1 = sp.make_signature(
         testAccountSecretKey,
-        message,
+        message1,
         message_format='Raw'
     )
-
-    scenario.h2("WHEN the oracle is updated twice")
-    update = sp.pair(signature, updateData)
-    parameter = sp.map(
+    update1 = sp.pair(signature1, updateData1)
+    parameter1 = sp.map(
         l={
-            assetCode: update
+            assetCode: update1
         },
         tkey=sp.TString,
         tvalue=SignedOracleDataType
     )
-    scenario += contract.update(parameter)
+    scenario += contract.update(parameter1)
 
-    scenario.h2("THEN the second update fails")
-    scenario += contract.update(parameter).run(valid=False)
+    scenario.h2("WHEN the oracle is updated a second time with the same time")
+    open2 = 8
+    high2 = 9
+    low2 = 10
+    close2 = 11
+    volume2 = 12
+    updateData2 = (
+        start,
+        (end,
+         (open2,
+          (high2,
+           (low2,
+            (close2, volume2))))))
+    message2 = sp.pack((assetCode, updateData2))
+    signature2 = sp.make_signature(
+        testAccountSecretKey,
+        message2,
+        message_format='Raw'
+    )
+    update2 = sp.pair(signature2, updateData2)
+    parameter2 = sp.map(
+        l={
+            assetCode: update2
+        },
+        tkey=sp.TString,
+        tvalue=SignedOracleDataType
+    )
+    scenario += contract.update(parameter2)
 
+    scenario.h2("THEN the second update has no effect")
+    assetData = contract.data.oracleData[assetCode]
+    endPair = sp.snd(assetData)
+    openPair = sp.snd(endPair)
+    highPair = sp.snd(openPair)
+    lowPair = sp.snd(highPair)
+    closeAndVolumePair = sp.snd(lowPair)
 
-@sp.add_test(name="Update Fails With Data From The Past")
+    oracleStart = sp.fst(assetData)
+    oracleEnd = sp.fst(endPair)
+    oracleOpen = sp.fst(openPair)
+    oracleHigh = sp.fst(highPair)
+    oracleLow = sp.fst(lowPair)
+    oracleClose = sp.fst(closeAndVolumePair)
+    oracleVolume = sp.snd(closeAndVolumePair)
+
+    scenario.verify(oracleStart == start)
+    scenario.verify(oracleEnd == end)
+    scenario.verify(oracleOpen == open1)
+    scenario.verify(oracleHigh == high1)
+    scenario.verify(oracleLow == low1)
+    scenario.verify(oracleClose == close1)
+    scenario.verify(oracleVolume == volume1)
+
+@sp.add_test(name="Correctly Processes Updates With Data From The Past")
 def test():
     scenario = sp.test_scenario()
-    scenario.h1("Update Fails With Data From The Past")
+    scenario.h1("Correctly Processes Updates With Data From The Past")
 
     scenario.h2("GIVEN an Oracle contract with some initial data.")
     assetCode = "XTZ-USD"
@@ -459,71 +502,100 @@ def test():
     )
     scenario += contract
 
-    start = sp.timestamp(2)
-    end = sp.timestamp(3)
-    open = 3
-    high = 4
-    low = 5
-    close = 6
-    volume = 7
-    updateData = (
-        start,
-        (end,
-         (open,
-          (high,
-           (low,
-            (close, volume))))))
-    message = sp.pack((assetCode, updateData))
-    signature = sp.make_signature(
+    start1 = sp.timestamp(3)
+    end1 = sp.timestamp(4)
+    open1 = 3
+    high1 = 4
+    low1 = 5
+    close1 = 6
+    volume1 = 7
+    updateData1 = (
+        start1,
+        (end1,
+         (open1,
+          (high1,
+           (low1,
+            (close1, volume1))))))
+    message1 = sp.pack((assetCode, updateData1))
+    signature1 = sp.make_signature(
         testAccountSecretKey,
-        message,
+        message1,
         message_format='Raw'
     )
 
-    update = sp.pair(signature, updateData)
-    parameter = sp.map(
+    update1 = sp.pair(signature1, updateData1)
+    parameter1 = sp.map(
         l={
-            assetCode: update
+            assetCode: update1
         },
         tkey=sp.TString,
         tvalue=SignedOracleDataType
     )
-    scenario += contract.update(parameter)
+    scenario += contract.update(parameter1)
 
     scenario.h2("WHEN the oracle is updated with a time in the past")
-    updateData = (
-        sp.timestamp(1),
-        (sp.timestamp(2),
-         (open,
-          (high,
-           (low,
-            (close, volume))))))
-    message = sp.pack(updateData)
-    signature = sp.make_signature(
+    start2 = sp.timestamp(1) # In past
+    end2 = sp.timestamp(2)
+    open2 = 8
+    high2 = 9
+    low2 = 10
+    close2 = 11
+    volume2 = 12
+    updateData2 = (
+        start2,
+        (end2,
+         (open2,
+          (high2,
+           (low2,
+            (close2, volume2))))))
+    message2 = sp.pack(updateData2)
+    signature2 = sp.make_signature(
         testAccountSecretKey,
-        message,
+        message2,
         message_format='Raw'
     )
 
-    update = sp.pair(signature, updateData)
-    parameter = sp.map(
+    update2 = sp.pair(signature2, updateData2)
+    parameter2 = sp.map(
         l={
-            assetCode: update
+            assetCode: update2
         },
         tkey=sp.TString,
         tvalue=SignedOracleDataType
     )
+    scenario += contract.update(parameter2)
 
-    scenario.h2("THEN the update in the past fails")
-    scenario += contract.update(parameter).run(valid=False)
+    scenario.h2("THEN the update in the past does not modify the data.")
+    assetData = contract.data.oracleData[assetCode]
+    endPair = sp.snd(assetData)
+    openPair = sp.snd(endPair)
+    highPair = sp.snd(openPair)
+    lowPair = sp.snd(highPair)
+    closeAndVolumePair = sp.snd(lowPair)
+
+    oracleStart = sp.fst(assetData)
+    oracleEnd = sp.fst(endPair)
+    oracleOpen = sp.fst(openPair)
+    oracleHigh = sp.fst(highPair)
+    oracleLow = sp.fst(lowPair)
+    oracleClose = sp.fst(closeAndVolumePair)
+    oracleVolume = sp.snd(closeAndVolumePair)
+
+    scenario.verify(oracleStart == start1)
+    scenario.verify(oracleEnd == end1)
+    scenario.verify(oracleOpen == open1)
+    scenario.verify(oracleHigh == high1)
+    scenario.verify(oracleLow == low1)
+    scenario.verify(oracleClose == close1)
+    scenario.verify(oracleVolume == volume1)
 
 
-@sp.add_test(name="Update Fails With Untracked Asset")
+@sp.add_test(name="Untracked Asset does not update oracle")
 def test():
     scenario = sp.test_scenario()
-    scenario.h1("Update Fails With Untracked Asset")
+    scenario.h1("Untracked Asset does not update oracle")
 
-    scenario.h2("GIVEN an Oracle contract")
+    scenario.h2("GIVEN an Oracle contract tracking an asset")
     assetCode = "XTZ-USD"
 
     contract = OracleContract(
@@ -538,40 +610,96 @@ def test():
     )
     scenario += contract
 
-    start = sp.timestamp(2)
-    end = sp.timestamp(3)
-    open = 3
-    high = 4
-    low = 5
-    close = 6
-    volume = 7
-    updateData = (
-        start,
-        (end,
-         (open,
-          (high,
-           (low,
-            (close, volume))))))
-    message = sp.pack((assetCode, updateData))
-    signature = sp.make_signature(
+    start1 = sp.timestamp(2)
+    end1 = sp.timestamp(3)
+    open1 = 3
+    high1 = 4
+    low1 = 5
+    close1 = 6
+    volume1 = 7
+    updateData1 = (
+        start1,
+        (end1,
+         (open1,
+          (high1,
+           (low1,
+            (close1, volume1))))))
+    message1 = sp.pack((assetCode, updateData1))
+    signature1 = sp.make_signature(
         testAccountSecretKey,
-        message,
+        message1,
         message_format='Raw'
     )
 
-    scenario.h2("WHEN the oracle is updated with an untracked asset")
-    update = sp.pair(signature, updateData)
-    parameter = sp.map(
+    update1 = sp.pair(signature1, updateData1)
+    parameter1 = sp.map(
         l={
-            "BTC-USD": update           # Not XTZ-USD
+            assetCode: update1
         },
         tkey=sp.TString,
         tvalue=SignedOracleDataType
     )
+    scenario += contract.update(parameter1)
 
-    scenario.h2("THEN the update fails.")
-    scenario += contract.update(parameter).run(valid=False)
+    scenario.h2("WHEN the oracle is updated with an untracked asset")
+    untrackedAsset = "BTC-USD"
+    start2 = sp.timestamp(4)
+    end2 = sp.timestamp(5)
+    open2 = 8
+    high2 = 9
+    low2 = 10
+    close2 = 11
+    volume2 = 12
+    updateData2 = (
+        start2,
+        (end2,
+         (open2,
+          (high2,
+           (low2,
+            (close2, volume2))))))
+    message2 = sp.pack((untrackedAsset, updateData2))
+    signature2 = sp.make_signature(
+        testAccountSecretKey,
+        message2,
+        message_format='Raw'
+    )
 
+    update2 = sp.pair(signature2, updateData2)
+    parameter2 = sp.map(
+        l={
+            untrackedAsset: update2
+        },
+        tkey=sp.TString,
+        tvalue=SignedOracleDataType
+    )
+    scenario += contract.update(parameter2)
+
+    scenario.h2("THEN the oracle only contains the data for the tracked asset.")
+    assetData = contract.data.oracleData[assetCode]
+    endPair = sp.snd(assetData)
+    openPair = sp.snd(endPair)
+    highPair = sp.snd(openPair)
+    lowPair = sp.snd(highPair)
+    closeAndVolumePair = sp.snd(lowPair)
+
+    oracleStart = sp.fst(assetData)
+    oracleEnd = sp.fst(endPair)
+    oracleOpen = sp.fst(openPair)
+    oracleHigh = sp.fst(highPair)
+    oracleLow = sp.fst(lowPair)
+    oracleClose = sp.fst(closeAndVolumePair)
+    oracleVolume = sp.snd(closeAndVolumePair)
+
+    scenario.verify(oracleStart == start1)
+    scenario.verify(oracleEnd == end1)
+    scenario.verify(oracleOpen == open1)
+    scenario.verify(oracleHigh == high1)
+    scenario.verify(oracleLow == low1)
+    scenario.verify(oracleClose == close1)
+    scenario.verify(oracleVolume == volume1)
+
+    scenario.h2("AND does not contain data for the untracked asset")
+    scenario.verify(~contract.data.oracleData.contains(untrackedAsset))
 
 @sp.add_test(name="Update Fails With Bad Signature")
 def test():
@@ -763,6 +891,155 @@ def test():
         tvalue=SignedOracleDataType
     )
     scenario += contract.update(parameter)
+
+@sp.add_test(name="Update with stale asset does not fail")
+def test():
+    scenario = sp.test_scenario()
+    scenario.h1("Update with stale asset does not fail")
+
+    scenario.h2("GIVEN an Oracle contract tracking two assets with an initial update")
+    assetCode1 = "XTZ-USD"
+    assetCode2 = "BTC-USD"
+
+    contract = OracleContract(
+        publicKey=testAccountPublicKey,
+        initialData=sp.big_map(
+            l={
+                assetCode1: initialOracleData,
+                assetCode2: initialOracleData
+            },
+            tkey=sp.TString,
+            tvalue=Harbinger.OracleDataType
+        )
+    )
+    scenario += contract
+
+    start1 = sp.timestamp(1)
+    end1 = sp.timestamp(2)
+    open1 = 3
+    high1 = 4
+    low1 = 5
+    close1 = 6
+    volume1 = 7
+    
+    updateData1 = (
+        start1,
+        (end1,
+         (open1,
+          (high1,
+           (low1,
+            (close1, volume1))))))
+
+    asset1Message1 = sp.pack((assetCode1, updateData1))
+    asset1Signature1 = sp.make_signature(
+        testAccountSecretKey,
+        asset1Message1,
+        message_format='Raw'
+    )
+
+    asset2Message1 = sp.pack((assetCode2, updateData1))
+    asset2Signature1 = sp.make_signature(
+        testAccountSecretKey,
+        asset2Message1,
+        message_format='Raw'
+    )
+
+    asset1Update1 = sp.pair(asset1Signature1, updateData1)
+    asset2Update1 = sp.pair(asset2Signature1, updateData1)
+
+    parameter = sp.map(
+        l={
+            assetCode1: asset1Update1,
+            assetCode2: asset2Update1,            
+        },
+        tkey=sp.TString,
+        tvalue=SignedOracleDataType
+    )
+    scenario += contract.update(parameter)
+
+    scenario.h2("WHEN an update is posted to the oracle with only one asset containing new data")
+    start2 = sp.timestamp(2)
+    end2 = sp.timestamp(3)
+    open2 = 8
+    high2 = 9
+    low2 = 10
+    close2 = 11
+    volume2 = 12
+    
+    updateData2 = (
+        start2,
+        (end2,
+         (open2,
+          (high2,
+           (low2,
+            (close2, volume2))))))
+
+    asset1Message2 = sp.pack((assetCode1, updateData2))
+    asset1Signature2 = sp.make_signature(
+        testAccountSecretKey,
+        asset1Message2,
+        message_format='Raw'
+    )
+
+    asset1Update2 = sp.pair(asset1Signature2, updateData2)
+
+    parameter = sp.map(
+        l={
+            assetCode1: asset1Update2,
+            assetCode2: asset2Update1,            
+        },
+        tkey=sp.TString,
+        tvalue=SignedOracleDataType
+    )
+    scenario += contract.update(parameter)
+
+    scenario.h2("THEN data for the asset with two updates is the second update.")
+    assetData1 = contract.data.oracleData[assetCode1]
+    endPair1 = sp.snd(assetData1)
+    openPair1 = sp.snd(endPair1)
+    highPair1 = sp.snd(openPair1)
+    lowPair1 = sp.snd(highPair1)
+    closeAndVolumePair1 = sp.snd(lowPair1)
+
+    oracleStart1 = sp.fst(assetData1)
+    oracleEnd1 = sp.fst(endPair1)
+    oracleOpen1 = sp.fst(openPair1)
+    oracleHigh1 = sp.fst(highPair1)
+    oracleLow1 = sp.fst(lowPair1)
+    oracleClose1 = sp.fst(closeAndVolumePair1)
+    oracleVolume1 = sp.snd(closeAndVolumePair1)
+
+    scenario.verify(oracleStart1 == start2)
+    scenario.verify(oracleEnd1 == end2)
+    scenario.verify(oracleOpen1 == open2)
+    scenario.verify(oracleHigh1 == high2)
+    scenario.verify(oracleLow1 == low2)
+    scenario.verify(oracleClose1 == close2)
+    scenario.verify(oracleVolume1 == volume2)
+
+    scenario.h2("THEN data for the asset with two updates is the second update.")
+    assetData2 = contract.data.oracleData[assetCode2]
+    endPair2 = sp.snd(assetData2)
+    openPair2 = sp.snd(endPair2)
+    highPair2 = sp.snd(openPair2)
+    lowPair2 = sp.snd(highPair2)
+    closeAndVolumePair2 = sp.snd(lowPair2)
+
+    oracleStart2 = sp.fst(assetData2)
+    oracleEnd2 = sp.fst(endPair2)
+    oracleOpen2 = sp.fst(openPair2)
+    oracleHigh2 = sp.fst(highPair2)
+    oracleLow2 = sp.fst(lowPair2)
+    oracleClose2 = sp.fst(closeAndVolumePair2)
+    oracleVolume2 = sp.snd(closeAndVolumePair2)
+
+    scenario.verify(oracleStart2 == start1)
+    scenario.verify(oracleEnd2 == end1)
+    scenario.verify(oracleOpen2 == open1)
+    scenario.verify(oracleHigh2 == high1)
+    scenario.verify(oracleLow2 == low1)
+    scenario.verify(oracleClose2 == close1)
+    scenario.verify(oracleVolume2 == volume1)
 
 # TODO(keefertaylor): Re-enable.
 #
