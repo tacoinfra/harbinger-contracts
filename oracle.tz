@@ -44,6 +44,18 @@ code
             PAIR;       # pair (big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))) (option key)
           }
           {
+            SWAP;       # @storage : @parameter%update
+            DUP;        # @storage : @storage : @parameter%update
+            DUG 2;      # @storage : @parameter%update : @storage
+            CDR;        # option key : @parameter%update : @storage
+            IF_SOME
+              {
+                DROP;       # @parameter%update : @storage
+              }
+              {
+                UNIT;       # unit : @parameter%update : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%update : @storage
             DUP;        # @parameter%update : @parameter%update : @storage
             ITER
               {

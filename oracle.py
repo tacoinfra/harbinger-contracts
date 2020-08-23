@@ -71,6 +71,9 @@ class OracleContract(sp.Contract):
     # { elt <asset code | string> (pair <signature | signature> (pair <start | timestamp> (pair <end | timestamp> (pair <nat | open> (pair <nat | high> (pair <nat low> (pair <close | nat> <volume | nat>)))))))'
     @sp.entry_point
     def update(self, params):
+        # If there is no value for the public key, the oracle is revoked. Ignore updates.
+        sp.verify(self.data.publicKey.is_some(), "revoked")
+
         # Iterate over assets in the input map.
         keyValueList = params.items()
         sp.for assetData in keyValueList:
@@ -124,7 +127,7 @@ class OracleContract(sp.Contract):
         self.data.oracleData = sp.big_map(
             l={},
             tkey=sp.TString,
-            tvalue=TezosOracle.OracleDataType
+            tvalue=Harbinger.OracleDataType
         )
 
     # Push the data for the Oracle to another contract.
