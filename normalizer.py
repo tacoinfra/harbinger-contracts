@@ -180,10 +180,10 @@ def test():
         )
     ).run(sender=badAddress, valid=False)
 
-@sp.add_test(name="Fails with updates from the same time")
+@sp.add_test(name="Correctly processes updates from the same time")
 def test():
     scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the same time")
+    scenario.h1("Correctly processes updates from the same time")
 
     scenario.h2("GIVEN a Normalizer contract with an update at a given time = 1")
     assetCode="XTZ-USD"
@@ -232,7 +232,7 @@ def test():
         )
     ).run(sender=defaultOracleContractAddress)
 
-    scenario.h2("THEN the original time is still reported.")
+    scenario.h2("THEN the original data is still reported.")
     expected = Harbinger.computeVWAP(
         high=high1,
         low=low1,
@@ -241,10 +241,10 @@ def test():
     ) // volume1
     scenario.verify(contract.data.assetMap[assetCode].computedPrice == expected)
 
-@sp.add_test(name="Fails with updates from the past")
+@sp.add_test(name="Correctly processes with updates from the past")
 def test():
     scenario=sp.test_scenario()
-    scenario.h1("Fails with updates from the past")
+    scenario.h1("Correctly processes with updates from the past")
 
     scenario.h2("GIVEN a Normalizer contract with an update")
     assetCode="XTZ-USD"
