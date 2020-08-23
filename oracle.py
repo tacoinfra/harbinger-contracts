@@ -904,7 +904,7 @@ def test():
     )
     scenario += contract
 
-    tart1 = sp.timestamp(1)
+    start1 = sp.timestamp(1)
     end1 = sp.timestamp(2)
     open1 = 3
     high1 = 4
