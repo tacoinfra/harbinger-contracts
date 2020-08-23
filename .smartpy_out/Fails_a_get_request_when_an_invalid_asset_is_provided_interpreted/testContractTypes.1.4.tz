@@ -1,0 +1,2 @@
+Storage: sp.TUnit
+Params: sp.TVariant(callback = sp.TUnit).layout("callback")

@@ -1,0 +1,24 @@
+Comment...
+ h1: Fails a get request when an invalid asset is provided
+Comment...
+ h2: GIVEN a Normalizer contract
+Creating contract
+ -> (Pair (Pair {"XTZ-USD"} {Elt "XTZ-USD" (Pair (Pair 0 "0") (Pair (Pair (Pair 0 -1) (Pair {Elt 0 0} 0)) (Pair (Pair 0 -1) (Pair {Elt 0 0} 0))))}) (Pair 3 "KT1QLPABNCD4z1cSYVv3ntYDYgtWTed7LkYr"))
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractTypes.0.2.tz 2
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractCode.0.2.tz 1224
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractCode.0.2.tz.json 1176
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testPrettyPrint.0.2.py 47
+Comment...
+ h2: AND a contract to call back to
+Creating contract
+ -> Unit
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractTypes.1.4.tz 2
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractCode.1.4.tz 9
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testContractCode.1.4.tz.json 5
+ => ./.smartpy_out/Fails_a_get_request_when_an_invalid_asset_is_provided_interpreted/testPrettyPrint.1.4.py 9
+Comment...
+ h2: WHEN a request is made
+Comment...
+ h2: THEN it fails.
+Executing get(('BTC-USD', sp.contract(sp.TNat, sp.contract_address(Contract1), entry_point='callback').open_some()))...
+ -> --- Expected failure in transaction --- WrongCondition in line 144: self.data.assetMap.contains(compute_140.value) ['bad request']

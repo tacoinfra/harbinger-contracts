@@ -73,19 +73,19 @@ class OracleContract(sp.Contract):
     def update(self, params):
         # Iterate over assets in the input map.
         keyValueList = params.items()
-        sp.for assetData in keyValueList:
+        with sp.for_('assetData', keyValueList) as assetData:
             # Extract asset names, signatures, and the new data.
             assetName = assetData.key
             signature = sp.compute(sp.fst(assetData.value))
             newData = sp.compute(sp.snd(assetData.value))
 
             # Verify Oracle is tracking this asset.
-            sp.if self.data.oracleData.contains(assetName):
+            with sp.if_(self.data.oracleData.contains(assetName)):
                 # Verify start timestamp is newer than the last update.
                 oldData = sp.compute(self.data.oracleData[assetName])
                 oldStartTime = sp.compute(sp.fst(oldData))
                 newStartTime = sp.compute(sp.fst(newData))    
-                sp.if newStartTime > oldStartTime:                
+                with sp.if_(newStartTime > oldStartTime):
                     # Verify signature.
                     bytes = sp.pack((assetName, newData))
                     sp.verify(
@@ -1103,3 +1103,4 @@ initialOracleData = (
         )
     )
 )
+
