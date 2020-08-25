@@ -1063,10 +1063,10 @@ def test():
     scenario.verify(contract.data.assetMap[assetCode2].computedPrice == expectedAssetCode2)
 
 
-@sp.add_test(name="Normalizes stale assets correctly")
+@sp.add_test(name="Normalizes zero volume candles correctly")
 def test():
     scenario=sp.test_scenario()
-    scenario.h1("Normalizes stale assets correctly")
+    scenario.h1("Normalizes zero volume candles correctly")
 
     scenario.h2("GIVEN a Normalizer contract with two assets")
     assetCode1="XTZ-USD"
