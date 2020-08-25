@@ -95,9 +95,6 @@ class NormalizerContract(sp.Contract):
                 # Only process updates that are monotonically increasing in start times.
                 updateStartTime = sp.compute(sp.fst(assetData))
                 sp.if updateStartTime > self.data.assetMap[assetCode].lastUpdateTime:
-                    # Update the last updated time.
-                    self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
-
                     # Extract required information
                     endPair = sp.compute(sp.snd(assetData))
                     openPair = sp.compute(sp.snd(endPair))
@@ -105,25 +102,31 @@ class NormalizerContract(sp.Contract):
                     lowPair = sp.compute(sp.snd(highPair))
                     closeAndVolumePair = sp.compute(sp.snd(lowPair))
 
-                    # Calculate the the price for this data point.
-                    # average price * volume
                     high = sp.compute(sp.fst(highPair))
                     low = sp.compute(sp.fst(lowPair))
                     close = sp.compute(sp.fst(closeAndVolumePair))
                     volume = sp.compute(sp.snd(closeAndVolumePair))
-                    volumePrice = ((high + low + close) / 3) * volume
 
-                    # Push the latest items to the FIFO queue
-                    fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
-                    fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+                    # Ignore candles with zero volumes.
+                    sp.if volume > 0:
+                        # Calculate the the price for this data point.
+                        # average price * volume
+                        volumePrice = ((high + low + close) / 3) * volume
 
-                    # Trim the queue if it exceeds the number of data points.
-                    sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
-                        fifoDT.pop(self.data.assetMap[assetCode].prices)
-                        fifoDT.pop(self.data.assetMap[assetCode].volumes)
+                        # Update the last updated time.
+                        self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
 
-                    # Calculate the volume
-                    self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
+                        # Push the latest items to the FIFO queue
+                        fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
+                        fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+
+                        # Trim the queue if it exceeds the number of data points.
+                        sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
+                            fifoDT.pop(self.data.assetMap[assetCode].prices)
+                            fifoDT.pop(self.data.assetMap[assetCode].volumes)
+
+                        # Calculate the volume
+                        self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
 
     # Returns the value in the Normalizer for the given asset.
     #
