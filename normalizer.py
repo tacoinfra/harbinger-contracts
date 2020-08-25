@@ -95,9 +95,6 @@ class NormalizerContract(sp.Contract):
                 # Only process updates that are monotonically increasing in start times.
                 updateStartTime = sp.compute(sp.fst(assetData))
                 sp.if updateStartTime > self.data.assetMap[assetCode].lastUpdateTime:
-                    # Update the last updated time.
-                    self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
-
                     # Extract required information
                     endPair = sp.compute(sp.snd(assetData))
                     openPair = sp.compute(sp.snd(endPair))
@@ -105,25 +102,31 @@ class NormalizerContract(sp.Contract):
                     lowPair = sp.compute(sp.snd(highPair))
                     closeAndVolumePair = sp.compute(sp.snd(lowPair))
 
-                    # Calculate the the price for this data point.
-                    # average price * volume
                     high = sp.compute(sp.fst(highPair))
                     low = sp.compute(sp.fst(lowPair))
                     close = sp.compute(sp.fst(closeAndVolumePair))
                     volume = sp.compute(sp.snd(closeAndVolumePair))
-                    volumePrice = ((high + low + close) / 3) * volume
 
-                    # Push the latest items to the FIFO queue
-                    fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
-                    fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+                    # Ignore candles with zero volumes.
+                    sp.if volume > 0:
+                        # Calculate the the price for this data point.
+                        # average price * volume
+                        volumePrice = ((high + low + close) / 3) * volume
 
-                    # Trim the queue if it exceeds the number of data points.
-                    sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
-                        fifoDT.pop(self.data.assetMap[assetCode].prices)
-                        fifoDT.pop(self.data.assetMap[assetCode].volumes)
+                        # Update the last updated time.
+                        self.data.assetMap[assetCode].lastUpdateTime = updateStartTime
 
-                    # Calculate the volume
-                    self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
+                        # Push the latest items to the FIFO queue
+                        fifoDT.push(self.data.assetMap[assetCode].prices, volumePrice)
+                        fifoDT.push(self.data.assetMap[assetCode].volumes, volume)
+
+                        # Trim the queue if it exceeds the number of data points.
+                        sp.if fifoDT.len(self.data.assetMap[assetCode].prices) > self.data.numDataPoints:
+                            fifoDT.pop(self.data.assetMap[assetCode].prices)
+                            fifoDT.pop(self.data.assetMap[assetCode].volumes)
+
+                        # Calculate the volume
+                        self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
 
     # Returns the value in the Normalizer for the given asset.
     #
@@ -902,7 +905,6 @@ def test():
     scenario.verify(contract.data.assetMap[assetCode1].computedPrice == expectedAssetCode1)
     scenario.verify(contract.data.assetMap[assetCode2].computedPrice == expectedAssetCode2)
 
-
 @sp.add_test(name="Trims multiple assets correctly")
 def test():
     scenario=sp.test_scenario()
@@ -1060,8 +1062,129 @@ def test():
     expectedAssetCode2=(partialVWAP4 + partialVWAP5) // (volume4 + volume5)
     scenario.verify(contract.data.assetMap[assetCode2].computedPrice == expectedAssetCode2)
 
-# TODO: Trim only affects one asset
 
+@sp.add_test(name="Normalizes zero volume candles correctly")
+def test():
+    scenario=sp.test_scenario()
+    scenario.h1("Normalizes zero volume candles correctly")
+
+    scenario.h2("GIVEN a Normalizer contract with two assets")
+    assetCode1="XTZ-USD"
+    assetCode2="BTC-USD"
+
+    contract=NormalizerContract()
+    scenario += contract
+
+    scenario.h2("WHEN a set of updates is provided")
+    start1=sp.timestamp(1)
+    end1=sp.timestamp(2)
+
+    asset1Open1=1
+    asset1High1=2
+    asset1Low1=3
+    asset1Close1=4
+    asset1Volume1=5
+
+    asset2Open1=6
+    asset2High1=7
+    asset2Low1=8
+    asset2Close1=9
+    asset2Volume1=10
+
+    scenario += contract.update(
+        sp.big_map(
+        l={
+            assetCode1: makeOracleDataPairs(
+                start1,
+                end1,
+                asset1Open1,
+                asset1High1,
+                asset1Low1,
+                asset1Close1,
+                asset1Volume1
+            ),
+            assetCode2: makeOracleDataPairs(
+                start1,
+                end1,
+                asset2Open1,
+                asset2High1,
+                asset2Low1,
+                asset2Close1,
+                asset2Volume1
+            )
+        },
+        tkey=sp.TString,
+        tvalue=Harbinger.OracleDataType
+        )
+    ).run(sender=defaultOracleContractAddress)
+  
+    scenario.h2("AND a second set of updates where one asset has zero volume")
+    start2=sp.timestamp(3)
+    end2=sp.timestamp(4)
+
+    asset1Open2=11
+    asset1High2=12
+    asset1Low2=13
+    asset1Close2=14
+    asset1Volume2=15
+
+    asset2Open2=16
+    asset2High2=17
+    asset2Low2=18
+    asset2Close2=19
+    assetVolume2=0
+
+    scenario += contract.update(
+        sp.big_map(
+        l={
+            assetCode1: makeOracleDataPairs(
+                start2,
+                end2,
+                asset1Open2,
+                asset1High2,
+                asset1Low2,
+                asset1Close2,
+                asset1Volume2
+            ),
+            assetCode2: makeOracleDataPairs(
+                start2,
+                end2,
+                asset2Open2,
+                asset2High2,
+                asset2Low2,
+                asset2Close2,
+                assetVolume2
+            )
+        },
+        tkey=sp.TString,
+        tvalue=Harbinger.OracleDataType
+        )
+    ).run(sender=defaultOracleContractAddress)
+  
+    scenario.h2("THEN the asset with two valid updates computes a VWAP based on two updates.")
+    asset1PartialVWAP1 = Harbinger.computeVWAP(
+        high=asset1High1,
+        low=asset1Low1,
+        close=asset1Close1,
+        volume=asset1Volume1
+    ) 
+    asset1PartialVWAP2 = Harbinger.computeVWAP(
+        high=asset1High2,
+        low=asset1Low2,
+        close=asset1Close2,
+        volume=asset1Volume2
+    ) 
+    asset1Expected = (asset1PartialVWAP1 + asset1PartialVWAP2) // (asset1Volume1 + asset1Volume2)
+    scenario.verify(contract.data.assetMap[assetCode1].computedPrice == asset1Expected)
+
+    scenario.h2("AND the asset with one valid update computes a VWAP based only on the first update.")
+    asset1Expected = Harbinger.computeVWAP(
+        high=asset2High1,
+        low=asset2Low1,
+        close=asset2Close1,
+        volume=asset2Volume1
+    ) // asset2Volume1
+    scenario.verify(contract.data.assetMap[assetCode2].computedPrice == asset1Expected)
 
 #####################################################################
 # Test Helpers
