@@ -1,4 +1,4 @@
-parameter (or (pair %get string (contract (pair string nat))) (big_map %update string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))));
+parameter (or (pair %get string (contract (pair string (pair timestamp nat)))) (big_map %update string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))));
 storage   (pair (pair (list %assetCodes string) (big_map %assetMap string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))))) (pair (int %numDataPoints) (address %oracleContract)));
 code
   {
@@ -13,44 +13,60 @@ code
         SWAP;       # @parameter%get : string : @storage
         DUP;        # @parameter%get : @parameter%get : string : @storage
         DUG 2;      # @parameter%get : string : @parameter%get : @storage
-        CDR;        # contract (pair string nat) : string : @parameter%get : @storage
-        DIG 3;      # @storage : contract (pair string nat) : string : @parameter%get
-        DUP;        # @storage : @storage : contract (pair string nat) : string : @parameter%get
-        DUG 4;      # @storage : contract (pair string nat) : string : @parameter%get : @storage
-        CADR;       # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string nat) : string : @parameter%get : @storage
-        DIG 2;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string nat) : @parameter%get : @storage
-        DUP;        # string : string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string nat) : @parameter%get : @storage
-        DUG 3;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string nat) : string : @parameter%get : @storage
-        MEM;        # bool : contract (pair string nat) : string : @parameter%get : @storage
+        CDR;        # contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
+        DIG 3;      # @storage : contract (pair string (pair timestamp nat)) : string : @parameter%get
+        DUP;        # @storage : @storage : contract (pair string (pair timestamp nat)) : string : @parameter%get
+        DUG 4;      # @storage : contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
+        CADR;       # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
+        DIG 2;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string (pair timestamp nat)) : @parameter%get : @storage
+        DUP;        # string : string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string (pair timestamp nat)) : @parameter%get : @storage
+        DUG 3;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
+        MEM;        # bool : contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
         IF
           {
-            DIG 2;      # @parameter%get : contract (pair string nat) : string : @storage
-            DROP;       # contract (pair string nat) : string : @storage
+            DIG 2;      # @parameter%get : contract (pair string (pair timestamp nat)) : string : @storage
+            DROP;       # contract (pair string (pair timestamp nat)) : string : @storage
           }
           {
-            UNIT;       # unit : contract (pair string nat) : string : @parameter%get : @storage
+            UNIT;       # unit : contract (pair string (pair timestamp nat)) : string : @parameter%get : @storage
             FAILWITH;   # FAILED
-          }; # contract (pair string nat) : string : @storage
-        NIL operation; # list operation : contract (pair string nat) : string : @storage
-        SWAP;       # contract (pair string nat) : list operation : string : @storage
-        PUSH mutez 0; # mutez : contract (pair string nat) : list operation : string : @storage
-        DIG 4;      # @storage : mutez : contract (pair string nat) : list operation : string
-        DUP;        # @storage : @storage : mutez : contract (pair string nat) : list operation : string
-        DUG 5;      # @storage : mutez : contract (pair string nat) : list operation : string : @storage
-        CADR;       # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string nat) : list operation : string : @storage
-        DIG 4;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string nat) : list operation : @storage
-        DUP;        # string : string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string nat) : list operation : @storage
-        DUG 5;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string nat) : list operation : string : @storage
-        GET;        # option (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string nat) : list operation : string : @storage
+          }; # contract (pair string (pair timestamp nat)) : string : @storage
+        NIL operation; # list operation : contract (pair string (pair timestamp nat)) : string : @storage
+        SWAP;       # contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        PUSH mutez 0; # mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        DIG 4;      # @storage : mutez : contract (pair string (pair timestamp nat)) : list operation : string
+        DUP;        # @storage : @storage : mutez : contract (pair string (pair timestamp nat)) : list operation : string
+        DUG 5;      # @storage : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        CADR;       # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        DIG 4;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
+        DUP;        # string : string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
+        DUG 5;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        GET;        # option (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
         IF_SOME
           {}
           {
-            UNIT;       # unit : mutez : contract (pair string nat) : list operation : string : @storage
+            UNIT;       # unit : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
             FAILWITH;   # FAILED
-          }; # @some : mutez : contract (pair string nat) : list operation : string : @storage
-        CAAR;       # nat : mutez : contract (pair string nat) : list operation : string : @storage
-        DIG 4;      # string : nat : mutez : contract (pair string nat) : list operation : @storage
-        PAIR;       # pair string nat : mutez : contract (pair string nat) : list operation : @storage
+          }; # @some : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        CAAR;       # nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        DIG 5;      # @storage : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string
+        DUP;        # @storage : @storage : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string
+        DUG 6;      # @storage : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        CADR;       # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        DIG 5;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
+        DUP;        # string : string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
+        DUG 6;      # string : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        GET;        # option (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        IF_SOME
+          {}
+          {
+            UNIT;       # unit : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+            FAILWITH;   # FAILED
+          }; # @some : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        CADR;       # timestamp : nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        PAIR;       # pair timestamp nat : mutez : contract (pair string (pair timestamp nat)) : list operation : string : @storage
+        DIG 4;      # string : pair timestamp nat : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
+        PAIR;       # pair string (pair timestamp nat) : mutez : contract (pair string (pair timestamp nat)) : list operation : @storage
         TRANSFER_TOKENS; # operation : list operation : @storage
         CONS;       # list operation : @storage
       }

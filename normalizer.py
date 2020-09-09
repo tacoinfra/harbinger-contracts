@@ -20,6 +20,8 @@ fifoDT = FifoQueue.FifoDataType()
 # The normalized value is represented as a natural number with six
 # digits of precision. For instance $123.45 USD would be represented
 # as 123_450_000.
+#
+# Normalizers keep track of a timestamp which tracks the last time an update was pushed. 
 #####################################################################
 
 class NormalizerContract(sp.Contract):
@@ -64,7 +66,7 @@ class NormalizerContract(sp.Contract):
                 assetMap=assetMap,
                 assetCodes=assetCodes,
                 oracleContract=oracleContractAddress,
-                numDataPoints=numDataPoints
+                numDataPoints=numDataPoints,
                 )
 
     # Update the Normalizer contract with a new set of data points.
@@ -128,7 +130,11 @@ class NormalizerContract(sp.Contract):
                         # Calculate the volume
                         self.data.assetMap[assetCode].computedPrice = self.data.assetMap[assetCode].prices.sum / self.data.assetMap[assetCode].volumes.sum
 
-    # Returns the value in the Normalizer for the given asset.
+    # Returns the data in the Normalizer for the given asset.
+    #
+    # The data returned takes the form of Pair(String, Pair(Timestamp, Nat)), where the values are
+    # the asset code requested, the time of the latest candle used to compute the update, and the 
+    # normalized price for the asset.
     #
     # The normalized value is represented as a natural number with six
     # digits of precision. For instance $123.45 USD would be represented
@@ -138,7 +144,7 @@ class NormalizerContract(sp.Contract):
     # reference which will be called with a pair with the asset code and the normalized value.
     @sp.entry_point
     def get(self, requestPair):
-        sp.set_type(requestPair, sp.TPair(sp.TString, sp.TContract(sp.TPair(sp.TString, sp.TNat))))
+        sp.set_type(requestPair, sp.TPair(sp.TString, sp.TContract(sp.TPair(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)))))
 
         # Destructure the arguments.
         requestedAsset = sp.compute(sp.fst(requestPair))
@@ -151,8 +157,10 @@ class NormalizerContract(sp.Contract):
         )
 
         # Callback with the requested data.
-        normalizedPrice = self.data.assetMap[requestedAsset].computedPrice
-        callbackParam = (requestedAsset, normalizedPrice)
+        assetData = self.data.assetMap[requestedAsset]
+        normalizedPrice = assetData.computedPrice
+        lastUpdateTime = assetData.lastUpdateTime
+        callbackParam = (requestedAsset, (lastUpdateTime, normalizedPrice))
         sp.transfer(callbackParam, sp.mutez(0), callback)
 
 #####################################################################
@@ -659,6 +667,7 @@ def test():
     scenario += dummyContract
 
     scenario.h2("AND a single data point")
+    start1=sp.timestamp(1595104530) 
     high1=1
     low1=2
     close1=3
@@ -668,7 +677,7 @@ def test():
     scenario += contract.update(
         makeMap(
             assetCode=assetCode,
-            start=sp.timestamp(1595104530),
+            start=start1,
             end=sp.timestamp(1595104531),
             open=3059701,
             high=high1,
@@ -680,7 +689,7 @@ def test():
 
     scenario.h2("WHEN a request is made")
     contractHandle = sp.contract(
-        sp.TPair(sp.TString, sp.TNat),
+        sp.TPair(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)),
         dummyContract.address,
         entry_point = "callback"
     ).open_some()
@@ -691,6 +700,7 @@ def test():
 
     scenario.h2("AND the dummy contract captured the expected values")
     scenario.verify(sp.fst(dummyContract.data.capturedCallbackValue) == assetCode)
+    scenario.verify(sp.fst(sp.snd(dummyContract.data.capturedCallbackValue)) == start1)
 
     expectedPartialVWAP = Harbinger.computeVWAP(
         high=high1,
@@ -699,7 +709,7 @@ def test():
         volume=volume1
     )
     expectedPrice = expectedPartialVWAP //  volume1
-    scenario.verify(sp.snd(dummyContract.data.capturedCallbackValue) == expectedPrice)
+    scenario.verify(sp.snd(sp.snd(dummyContract.data.capturedCallbackValue)) == expectedPrice)
 
 @sp.add_test(name="Fails a get request when an invalid asset is provided")
 def test():
@@ -717,7 +727,7 @@ def test():
 
     scenario.h2("WHEN a request is made")
     contractHandle = sp.contract(
-        sp.TPair(sp.TString, sp.TNat),
+        sp.TPair(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat)),
         dummyContract.address,
         entry_point = "callback"
     ).open_some()
@@ -1257,7 +1267,7 @@ def makeMap(assetCode, start, end, open, high, low, close, volume):
 class DummyContract(sp.Contract):
     def __init__(self, **kargs):
         self.init(
-            capturedCallbackValue = ("", sp.nat(0))
+            capturedCallbackValue = ("", (sp.timestamp(0), sp.nat(0)))
         )
 
     @sp.entry_point
