@@ -64,7 +64,7 @@ class NormalizerContract(sp.Contract):
                 assetMap=assetMap,
                 assetCodes=assetCodes,
                 oracleContract=oracleContractAddress,
-                numDataPoints=numDataPoints,
+                numDataPoints=numDataPoints
                 )
 
     # Update the Normalizer contract with a new set of data points.
