@@ -20,8 +20,6 @@ fifoDT = FifoQueue.FifoDataType()
 # The normalized value is represented as a natural number with six
 # digits of precision. For instance $123.45 USD would be represented
 # as 123_450_000.
-#
-# Normalizers keep track of a timestamp which tracks the last time an update was pushed. 
 #####################################################################
 
 class NormalizerContract(sp.Contract):
