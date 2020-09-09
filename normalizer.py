@@ -132,9 +132,10 @@ class NormalizerContract(sp.Contract):
 
     # Returns the data in the Normalizer for the given asset.
     #
-    # The data returned takes the form of Pair(String, Pair(Timestamp, Nat)), where the values are
-    # the asset code requested, the time of the latest candle used to compute the update, and the 
-    # normalized price for the asset.
+    # The data returned takes the form of Pair(String, Pair(Timestamp, Nat)), where the following components:
+    # - The asset code requested
+    # - The time of the latest candle that was used to compute the update
+    # - The normalized price of the asset. 
     #
     # The normalized value is represented as a natural number with six
     # digits of precision. For instance $123.45 USD would be represented
