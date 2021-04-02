@@ -68,7 +68,7 @@ class OracleContract(sp.Contract):
     # Updates must be monotonically increasing in start time.
     #
     # An example parameter looks like:
-    # { elt <asset code | string> (pair <signature | signature> (pair <start | timestamp> (pair <end | timestamp> (pair <nat | open> (pair <nat | high> (pair <nat low> (pair <close | nat> <volume | nat>)))))))'
+    # { elt <asset code | string> (pair <signature | signature> (pair <start | timestamp> (pair <end | timestamp> (pair <open | nat> (pair <high | nat> (pair <low | nat> (pair <close | nat> <volume | nat>)))))))'
     @sp.entry_point
     def update(self, params):
         # If there is no value for the public key, the oracle is revoked. Ignore updates.
