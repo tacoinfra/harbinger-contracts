@@ -1,6 +1,6 @@
 import smartpy as sp
 
-Harbinger = sp.import_script_from_url("file:common.py")
+Harbinger = sp.io.import_script_from_url("file:common.py")
 
 # Data type that represents a signed update to the Oracle.
 SignedOracleDataType = sp.TPair(sp.TSignature, Harbinger.OracleDataType)
