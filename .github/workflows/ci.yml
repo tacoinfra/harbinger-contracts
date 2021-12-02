@@ -1,0 +1,19 @@
+name: Build
+
+on: push
+jobs:
+  build_and_test_smart_contracts:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - uses: actions/setup-python@v2
+    - name: "Install Dependencies"
+      run: |
+        sudo apt-get update && sudo apt-get install make
+    - name: "Install SmartPy"
+      run: |
+        curl -s https://smartpy.io/releases/20211121-23e4d3e4c53d5a934a14ca6d8da4c336ddf3fbf5/cli/install.sh | sh -s -- local-install ~/smartpy-cli
+    - name: "Build and Test Smart Contracts"
+      run: |
+        make all

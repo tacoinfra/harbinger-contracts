@@ -20,21 +20,21 @@ Additionally, the following files provide helper functionality and are not top-l
 
 Harbinger contracts are written in [SmartPy](https://smartpy.io/). Please consult the [SmartPy Documentation](https://smartpy.io/demo/reference.html) for instructions on how to install and get started with the SmartPy command line tools. 
 
-The fastest way to test and compile the contracts is to use the provided helper script:
+You can run tests and compile with:
 ```shell
-$ ./compile-smartpy.sh
+$ make all
 ```
 
 To manually compile a contract:
 ```shell
-$ ~/smartpy-cli/SmartPy.sh compile ./oracle.py "OracleContract()" ./oracle-out
-$ ~/smartpy-cli/SmartPy.sh compile ./normalizer.py "NormalizerContract()" ./normalizer-out
+$ make compile-minter
+$ make compile-normalizer
 ```
 
 To manually test a contract: 
 ```
-$ ~/smartpy-cli/SmartPy.sh test ./oracle.py ./.oracle-test-out
-$ ~/smartpy-cli/SmartPy.sh test ./normalizer.py ./.normalizer-test-out
+$ make test-minter
+$ make test-normalizer
 ```
 
 ## Contract Specifications
