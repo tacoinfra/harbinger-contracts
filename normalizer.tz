@@ -975,3 +975,60 @@ code
       }; # list operation : @storage
     PAIR;       # pair (list operation) @storage
   };
+view
+  "getPrice" string (pair timestamp nat)
+  {
+    UNPAIR;     # @parameter : @storage
+    SWAP;       # @storage : @parameter
+    # sp.verify(self.data.assetMap.contains(params), 'bad request') # @storage : @parameter
+    DUP;        # @storage : @storage : @parameter
+    DUG 2;      # @storage : @parameter : @storage
+    CAR;        # pair (list %assetCodes string) (big_map %assetMap string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))) : @parameter : @storage
+    CDR;        # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @parameter : @storage
+    SWAP;       # @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @storage
+    DUP;        # @parameter : @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @storage
+    DUG 2;      # @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @parameter : @storage
+    MEM;        # bool : @parameter : @storage
+    IF
+      {}
+      {
+        PUSH string "bad request"; # string : @parameter : @storage
+        FAILWITH;   # FAILED
+      }; # @parameter : @storage
+    SWAP;       # @storage : @parameter
+    # sp.result((self.data.assetMap[params].lastUpdateTime, self.data.assetMap[params].computedPrice)) # @storage : @parameter
+    DUP;        # @storage : @storage : @parameter
+    DUG 2;      # @storage : @parameter : @storage
+    CAR;        # pair (list %assetCodes string) (big_map %assetMap string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))) : @parameter : @storage
+    CDR;        # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @parameter : @storage
+    SWAP;       # @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @storage
+    DUP;        # @parameter : @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @storage
+    DUG 2;      # @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @parameter : @storage
+    GET;        # option (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : @parameter : @storage
+    IF_NONE
+      {
+        PUSH int 184; # int : @parameter : @storage
+        FAILWITH;   # FAILED
+      }
+      {
+        # of_some: Get-item:184 # @some : @parameter : @storage
+      }; # @some : @parameter : @storage
+    CAR;        # pair (nat %computedPrice) (timestamp %lastUpdateTime) : @parameter : @storage
+    CAR;        # nat : @parameter : @storage
+    DIG 2;      # @storage : nat : @parameter
+    CAR;        # pair (list %assetCodes string) (big_map %assetMap string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum)))))) : nat : @parameter
+    CDR;        # big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat : @parameter
+    DIG 2;      # @parameter : big_map string (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat
+    GET;        # option (pair (pair (nat %computedPrice) (timestamp %lastUpdateTime)) (pair (pair %prices (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))) (pair %volumes (pair (int %first) (int %last)) (pair (map %saved int nat) (nat %sum))))) : nat
+    IF_NONE
+      {
+        PUSH int 184; # int : nat
+        FAILWITH;   # FAILED
+      }
+      {
+        # of_some: Get-item:184 # @some : nat
+      }; # @some : nat
+    CAR;        # pair (nat %computedPrice) (timestamp %lastUpdateTime) : nat
+    CDR;        # timestamp : nat
+    PAIR;       # pair timestamp nat
+  };
