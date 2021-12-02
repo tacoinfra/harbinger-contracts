@@ -754,6 +754,54 @@ if __name__ == "__main__":
         expectedPrice = expectedPartialVWAP //  volume1
         scenario.verify(sp.snd(sp.snd(dummyContract.data.capturedCallbackValue)) == expectedPrice)
 
+    @sp.add_test(name="View contains the correct data")
+    def test():
+        scenario=sp.test_scenario()
+        scenario.h1("Calls back correctly when a valid asset is provided")
+
+        scenario.h2("GIVEN a Normalizer contract")
+        assetCode = "XTZ-USD"
+        contract=NormalizerContract(assetCodes=[assetCode])
+        scenario += contract
+
+        scenario.h2("AND a contract to call back to")
+        dummyContract = DummyContract()
+        scenario += dummyContract
+
+        scenario.h2("AND a single data point")
+        start1=sp.timestamp(1595104530) 
+        high1=1
+        low1=2
+        close1=3
+        volume1=4
+        assetCode = "XTZ-USD"
+
+        scenario += contract.update(
+            makeMap(
+                assetCode=assetCode,
+                start=start1,
+                end=sp.timestamp(1595104531),
+                open=3059701,
+                high=high1,
+                low=low1,
+                close=close1,
+                volume=volume1
+            )
+        ).run(sender=defaultOracleContractAddress)
+
+        scenario.h2("WHEN the onchain view is read")
+        scenario.h2("THEN it the correct data is returned.")
+        scenario.verify(sp.fst(contract.getPrice()) == start1)
+
+        expectedPartialVWAP = Harbinger.computeVWAP(
+            high=high1,
+            low=low1,
+            close=close1,
+            volume=volume1
+        )
+        expectedPrice = expectedPartialVWAP //  volume1
+        scenario.verify(sp.snd(contract.getPrice()) == expectedPrice)
+
     @sp.add_test(name="Fails a get request when an invalid asset is provided")
     def test():
         scenario=sp.test_scenario()
