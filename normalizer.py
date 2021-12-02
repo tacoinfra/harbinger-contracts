@@ -127,7 +127,7 @@ class NormalizerContract(sp.Contract):
 
     # Returns the data in the Normalizer for the given asset.
     #
-    # The data returned takes the form of Pair(String, Pair(Timestamp, Nat)), where the following components:
+    # The data returned takes the form of Pair(String, Pair(Timestamp, Nat)), which is composed of the following components:
     # - The asset code requested
     # - The time of the latest candle that was used to compute the update
     # - The normalized price of the asset. 
@@ -136,7 +136,7 @@ class NormalizerContract(sp.Contract):
     # digits of precision. For instance $123.45 USD would be represented
     # as 123_450_000.
     #
-    # Parameters a pair of the asset code (ex. XTZ-USD) and a Contract 
+    # Parameters: a pair of the asset code (ex. XTZ-USD) and a Contract 
     # reference which will be called with a pair with the asset code and the normalized value.
     @sp.entry_point
     def get(self, requestPair):
@@ -158,6 +158,33 @@ class NormalizerContract(sp.Contract):
         lastUpdateTime = assetData.lastUpdateTime
         callbackParam = (requestedAsset, (lastUpdateTime, normalizedPrice))
         sp.transfer(callbackParam, sp.mutez(0), callback)
+
+    # Returns the data in the Normalizer for the given asset in an onchain view..
+    #
+    # The data returned takes the form of Pair(Timestamp, Nat), which is composed of the following components:
+    # - The time of the latest candle that was used to compute the update
+    # - The normalized price of the asset. 
+    #
+    # The normalized value is represented as a natural number with six
+    # digits of precision. For instance $123.45 USD would be represented
+    # as 123_450_000.
+    #
+    # Parameters: The of the asset code (ex. XTZ-USD)
+    @sp.onchain_view()
+    def getPrice(self, assetCode):
+        sp.set_type(assetCode, sp.TString)
+
+        # Verify this normalizer has data for the requested asset.
+        sp.verify(
+            self.data.assetMap.contains(assetCode),
+            message="bad request"
+        )
+
+        # Callback with the requested data.
+        assetData = self.data.assetMap[assetCode]
+        normalizedPrice = assetData.computedPrice
+        lastUpdateTime = assetData.lastUpdateTime
+        sp.result((lastUpdateTime, normalizedPrice))
 
 #####################################################################
 # Tests
@@ -791,7 +818,7 @@ if __name__ == "__main__":
 
         scenario.h2("WHEN the onchain view is read")
         scenario.h2("THEN it the correct data is returned.")
-        scenario.verify(sp.fst(contract.getPrice()) == start1)
+        scenario.verify(sp.fst(contract.getPrice(assetCode)) == start1)
 
         expectedPartialVWAP = Harbinger.computeVWAP(
             high=high1,
@@ -800,7 +827,7 @@ if __name__ == "__main__":
             volume=volume1
         )
         expectedPrice = expectedPartialVWAP //  volume1
-        scenario.verify(sp.snd(contract.getPrice()) == expectedPrice)
+        scenario.verify(sp.snd(contract.getPrice(assetCode)) == expectedPrice)
 
     @sp.add_test(name="Fails a get request when an invalid asset is provided")
     def test():

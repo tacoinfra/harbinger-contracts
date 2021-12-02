@@ -134,6 +134,34 @@ class OracleContract(sp.Contract):
     def push(self, contract):
         sp.transfer(self.data.oracleData, sp.mutez(0), contract)
 
+    # Returns the data in the Oracle for the given asset in an onchain view..
+    #
+    # The data returned is a price candle given in nested pairs with the following components:
+    # - timestamp - candle start time
+    # - timestamp - candle end time
+    # - nat - open price
+    # - nat - high price
+    # - nat - low price
+    # - nat - close price
+    # - nat - volume
+    #
+    # Values represented as a natural number with six digits of precision. For instance $123.45 USD would be represented
+    # as 123_450_000.
+    #
+    # Parameters: The of the asset code (ex. XTZ-USD)
+    @sp.onchain_view()
+    def getPrice(self, assetCode):
+        sp.set_type(assetCode, sp.TString)
+
+        # Verify this normalizer has data for the requested asset.
+        sp.verify(
+            self.data.oracleData.contains(assetCode),
+            message="bad request"
+        )
+
+        # Callback with the requested data.
+        sp.result(self.data.oracleData[assetCode])
+
 #####################################################################
 # Tests
 #####################################################################
@@ -144,7 +172,6 @@ if __name__ == "__main__":
     #####################################################################
     # Test Helpers
     #####################################################################
-
 
     # Default Oracle Contract Keys
     testAccount = sp.test_account("Test1")
@@ -1074,6 +1101,74 @@ if __name__ == "__main__":
         scenario.verify(oracleLow2 == low1)
         scenario.verify(oracleClose2 == close1)
         scenario.verify(oracleVolume2 == volume1)
+
+
+    @sp.add_test(name="Onchain view returns correct data")
+    def test():
+        scenario = sp.test_scenario()
+        scenario.h1("Onchain view returns correct data")
+
+        scenario.h2("GIVEN an Oracle contract")
+        contract = OracleContract(
+            publicKey=testAccountPublicKey,
+        )
+        scenario += contract
+
+        scenario.h2("AND an update")
+        assetCode = "XTZ-USD"
+        start = sp.timestamp(1)
+        end = sp.timestamp(2)
+        open = 3
+        high = 4
+        low = 5
+        close = 6
+        volume = 7
+        updateData = (
+            start,
+            (
+                end,
+                (
+                    open,
+                    (
+                        high,
+                        (
+                            low,
+                           (close, volume)
+                        )
+                    )
+                )
+            )
+        )
+        message = sp.pack((assetCode, updateData))
+        signature = sp.make_signature(
+            testAccountSecretKey,
+            message,
+            message_format='Raw'
+        )
+
+        scenario.h2("AND the oracle is updated")
+        update = sp.pair(signature, updateData)
+        parameter = sp.map(
+            l={
+                assetCode: update
+            },
+            tkey=sp.TString,
+            tvalue=SignedOracleDataType
+        )
+        scenario += contract.update(parameter)
+
+        scenario.h2("WHEN data is read from an onchain view")
+        scenario.h2("THEN the data matches the latest update")
+        scenario.verify(sp.fst(contract.getPrice(assetCode)) == start)
+        scenario.verify(sp.fst(sp.snd(contract.getPrice(assetCode))) == end)
+        scenario.verify(sp.fst(sp.snd(sp.snd(contract.getPrice(assetCode)))) == open)
+        scenario.verify(sp.fst(sp.snd(sp.snd(sp.snd(contract.getPrice(assetCode))))) == high)
+        scenario.verify(sp.fst(sp.snd(sp.snd(sp.snd(sp.snd(contract.getPrice(assetCode)))))) == low)
+        scenario.verify(sp.fst(sp.snd(sp.snd(sp.snd(sp.snd(sp.snd(contract.getPrice(assetCode))))))) == close)
+        scenario.verify(sp.snd(sp.snd(sp.snd(sp.snd(sp.snd(sp.snd(contract.getPrice(assetCode))))))) == volume)
+
+        # scenario.verify(sp.fst(sp.snd(sp.snd(sp.snd(sp.snd(sp.snd(sp.snd(contract.getPrice(assetCode)))))))) == volume)
+
 
     # TODO(keefertaylor): Re-enable.
     #
