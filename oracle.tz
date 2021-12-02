@@ -154,3 +154,36 @@ code
       }; # list operation : @storage
     PAIR;       # pair (list operation) @storage
   };
+view
+  "getPrice" string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))
+  {
+    UNPAIR;     # @parameter : @storage
+    SWAP;       # @storage : @parameter
+    # sp.verify(self.data.oracleData.contains(params), 'bad request') # @storage : @parameter
+    DUP;        # @storage : @storage : @parameter
+    DUG 2;      # @storage : @parameter : @storage
+    CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @parameter : @storage
+    SWAP;       # @parameter : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    DUP;        # @parameter : @parameter : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @storage
+    DUG 2;      # @parameter : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @parameter : @storage
+    MEM;        # bool : @parameter : @storage
+    IF
+      {}
+      {
+        PUSH string "bad request"; # string : @parameter : @storage
+        FAILWITH;   # FAILED
+      }; # @parameter : @storage
+    SWAP;       # @storage : @parameter
+    # sp.result(self.data.oracleData[params]) # @storage : @parameter
+    CAR;        # big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))) : @parameter
+    SWAP;       # @parameter : big_map string (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))
+    GET;        # option (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))
+    IF_NONE
+      {
+        PUSH int 163; # int
+        FAILWITH;   # FAILED
+      }
+      {
+        # of_some: Get-item:163 # @some
+      }; # @some
+  };
